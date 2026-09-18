@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "hyperstyle",
+	"version": "${version}",
+	"name": "HyperStyle",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/hyperstyle/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.gluucc.HyperStyle"
+		],
+		"client": [
+			"io.github.gluucc.client.HyperStyleClient"
+		]
+	},
+	"mixins": [
+		"hyperstyle.mixins.json",
+		{
+			"config": "hyperstyle.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.20.4",
+		"java": ">=17",
+		"fabric-api": "*"
+	}
+}
