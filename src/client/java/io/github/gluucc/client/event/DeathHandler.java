@@ -15,7 +15,7 @@ public class DeathHandler {
         DamageSource source = DamageHandler.getLastDamage(target.getId());
 
         if (source != null && source.getAttacker() == MinecraftClient.getInstance().player) {
-            StyleMeter.addStyle("KILL", 45);
+            StyleMeter.addStyle("KILL", 45, 0xFFFFFFFF);
 
             recentKills.addLast(StyleMeter.getCurrentTick());
 
@@ -24,15 +24,15 @@ public class DeathHandler {
             }
 
             if (recentKills.size() == 2) {
-                StyleMeter.addStyle("DOUBLE KILL", 25);
+                StyleMeter.addStyle("DOUBLE KILL", 25, 0xFFFFA500);
             }
 
             if (recentKills.size() == 3) {
-                StyleMeter.addStyle("TRIPLE KILL", 50);
+                StyleMeter.addStyle("TRIPLE KILL", 50, 0xFFFFA500);
             }
 
             if (recentKills.size() >= 4) {
-                StyleMeter.addStyle("MULTIKILL", 100);
+                StyleMeter.addStyle("MULTIKILL", 100, 0xFFFFA500);
             }
         }
 

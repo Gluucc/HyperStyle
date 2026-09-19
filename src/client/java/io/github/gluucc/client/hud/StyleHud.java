@@ -29,8 +29,8 @@ public class StyleHud {
         int width = context.getScaledWindowWidth();
 
         context.drawTexture(TEXTURE, width-TEXTURE_RESOLUTION-10, 10, 0, 0, TEXTURE_RESOLUTION, TEXTURE_RESOLUTION, TEXTURE_RESOLUTION, TEXTURE_RESOLUTION);
-        context.drawText(renderer, Integer.toString((int) stylePoints), width-pointsGaugeWidth-10, 30, 0xFF0000FF, false);
-        context.drawText(renderer, currentRank.getStyleLabel(), width-rankGaugeWidth-10, 20, 0xFF0000FF, false);
+        context.drawText(renderer, Integer.toString((int) stylePoints), width-pointsGaugeWidth-10, 30, 0xFFFFFFFF, false);
+        context.drawText(renderer, currentRank.getStyleLabel(), width-rankGaugeWidth-10, 20, currentRank.getRankColor(), false);
 
         int entryOffsetY = 0;
 
@@ -40,7 +40,7 @@ public class StyleHud {
                 entryText += " x" + entry.count();
             }
             int entryWidth = renderer.getWidth(entryText);
-            context.drawText(renderer, entryText, width-entryWidth-10, 45+entryOffsetY, 0xFF0000FF, false);
+            context.drawText(renderer, entryText, width-entryWidth-10, 45+entryOffsetY, entry.color(), false);
             entryOffsetY += renderer.fontHeight + 5;
         }
     }
