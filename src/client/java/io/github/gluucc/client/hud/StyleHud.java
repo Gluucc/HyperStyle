@@ -13,7 +13,8 @@ import java.util.Collection;
 
 public class StyleHud {
     final static Identifier TEXTURE = HyperStyle.id("textures/gui/test1.png");
-    final static int TEXTURE_RESOLUTION = 32;
+    final static int TEXTURE_HEIGHT = 128;
+    final static int TEXTURE_WIDTH = 96;
 
     public static void render(DrawContext context, float tickDelta){
         double stylePoints = StyleMeter.getStylePoints();
@@ -28,9 +29,12 @@ public class StyleHud {
 
         int width = context.getScaledWindowWidth();
 
-        context.drawTexture(TEXTURE, width-TEXTURE_RESOLUTION-10, 10, 0, 0, TEXTURE_RESOLUTION, TEXTURE_RESOLUTION, TEXTURE_RESOLUTION, TEXTURE_RESOLUTION);
-        context.drawText(renderer, Integer.toString((int) stylePoints), width-pointsGaugeWidth-10, 30, 0xFFFFFFFF, false);
-        context.drawText(renderer, currentRank.getStyleLabel(), width-rankGaugeWidth-10, 20, currentRank.getRankColor(), false);
+        int meterX = width - TEXTURE_WIDTH - 10;
+        int meterY = 10;
+
+        context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        context.drawText(renderer, Integer.toString((int) stylePoints), meterX, 30, 0xFFFFFFFF, false);
+        context.drawText(renderer, currentRank.getStyleLabel(), meterX, 20, currentRank.getRankColor(), false);
 
         int entryOffsetY = 0;
 
@@ -40,7 +44,7 @@ public class StyleHud {
                 entryText += " x" + entry.count();
             }
             int entryWidth = renderer.getWidth(entryText);
-            context.drawText(renderer, entryText, width-entryWidth-10, 45+entryOffsetY, entry.color(), false);
+            context.drawText(renderer, entryText, meterX, 45+entryOffsetY, entry.color(), false);
             entryOffsetY += renderer.fontHeight + 5;
         }
     }
