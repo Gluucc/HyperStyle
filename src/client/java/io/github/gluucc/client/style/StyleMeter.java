@@ -2,6 +2,8 @@ package io.github.gluucc.client.style;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Collections;
 
 public class StyleMeter {
     private static double stylePoints;
@@ -11,6 +13,12 @@ public class StyleMeter {
     private static final ArrayDeque<QueuedEvent> styleQueue = new ArrayDeque<>();
     private static final ArrayDeque<StyleEntry> styleList = new ArrayDeque<>();
     private static StyleRank currentRank = StyleRank.UNRANKED;
+    private static final ArrayDeque<FreshnessEntry> freshnessWindow = new ArrayDeque<>();
+    private static final int MAX_FRESHNESS_ENTRIES = 8;
+    private static final int MAX_FRESHNESS_LIST_AGE = 80;
+    private static double freshness = 1;
+    private static final double MAX_FRESHNESS_BONUS = 0.75;
+    private static final int CATEGORY_COUNT = StyleCategory.values().length - 1;
 
     public static void tick() {
         currentTick++;
@@ -29,7 +37,23 @@ public class StyleMeter {
                 styleList.addFirst(new StyleEntry(pending.event(), 1, currentTick));
 
             }
-            stylePoints += pending.event().getEventPoints();
+
+            if (freshnessWindow.size() >= MAX_FRESHNESS_ENTRIES) {
+                freshnessWindow.removeLast();
+            }
+
+            if (pending.category() != StyleCategory.NONE) {
+                freshnessWindow.addFirst(new FreshnessEntry(pending.category(), currentTick));
+            }
+
+            int count = countDistinctCategories();
+            if (count == 0) {
+                freshness = 1;
+            } else {
+                freshness = 1 + (count - 1) / (CATEGORY_COUNT - 1.0) * MAX_FRESHNESS_BONUS;
+            }
+
+            stylePoints += pending.event().getEventPoints() * freshness;
         }
 
         if (stylePoints > 0) {
@@ -49,6 +73,10 @@ public class StyleMeter {
         while(!styleList.isEmpty() && currentTick - styleList.getLast().createdAt() >= MAX_STYLE_LIST_AGE) {
             styleList.removeLast();
         }
+
+        while(!freshnessWindow.isEmpty() && currentTick - freshnessWindow.getLast().createdAt() >= MAX_FRESHNESS_LIST_AGE) {
+            freshnessWindow.removeLast();
+        }
     }
 
     public static void addStyle(StyleEvent event, StyleCategory category) {
@@ -64,11 +92,23 @@ public class StyleMeter {
     }
 
     public static Collection<StyleEntry> getStyleList() {
-        return styleList;
+        return Collections.unmodifiableCollection(styleList);
     }
 
     public static int getCurrentTick() {
         return currentTick;
+    }
+
+    public static double getFreshness() {
+        return freshness;
+    }
+
+    private static int countDistinctCategories() {
+        EnumSet<StyleCategory> distinct = EnumSet.noneOf(StyleCategory.class);
+        for (FreshnessEntry entry : freshnessWindow) {
+            distinct.add(entry.category());
+        }
+        return distinct.size();
     }
 
     public static void reset() {
@@ -77,5 +117,7 @@ public class StyleMeter {
         stylePoints = 0;
         styleQueue.clear();
         styleList.clear();
+        freshnessWindow.clear();
+        freshness = 1;
     }
 }

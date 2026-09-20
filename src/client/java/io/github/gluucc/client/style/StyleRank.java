@@ -1,8 +1,8 @@
 package io.github.gluucc.client.style;
 
 public enum StyleRank {
-    UNRANKED("", 0, 1.0, 0x00000000),
-    D("DESTRUCTIVE", 1, 1.0, 0xFF0000FF),
+    UNRANKED("UNRANKED", 0, 1.0, 0x00000000),
+    D("DESTRUCTIVE", 200, 1.0, 0xFF0000FF),
     C("CHAOTIC", 300, 1.25, 0xFF00FF00),
     B("BRUTAL", 400, 1.5, 0xFFFFFF00),
     A("ANARCHIC", 500, 2.0, 0xFFFFA500),
