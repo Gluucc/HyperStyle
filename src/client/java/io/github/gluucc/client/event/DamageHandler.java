@@ -48,6 +48,14 @@ public class DamageHandler {
         return lastDamage.get(entityId);
     }
 
+    public static void removeRecord(int entityId) {
+        lastDamage.remove(entityId);
+    }
+
+    public static void reset() {
+        lastDamage.clear();
+    }
+
     private static double heightAboveGround(LivingEntity target) {
         Vec3d start = target.getPos();
         Vec3d end = start.subtract(0, MAX_RAYCAST, 0);

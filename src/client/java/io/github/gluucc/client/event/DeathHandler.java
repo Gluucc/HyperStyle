@@ -44,6 +44,12 @@ public class DeathHandler {
             if (recentKills.size() >= 4) {
                 StyleMeter.addStyle(StyleEvent.MULTIKILL, StyleCategory.NONE);
             }
+
+            DamageHandler.removeRecord(target.getId());
         }
+    }
+
+    public static void reset() {
+        recentKills.clear();
     }
 }

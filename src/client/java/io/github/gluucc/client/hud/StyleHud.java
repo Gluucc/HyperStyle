@@ -17,11 +17,14 @@ public class StyleHud {
     final static int TEXTURE_WIDTH = 96;
 
     public static void render(DrawContext context, float tickDelta){
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.currentScreen != null || client.options.hudHidden) {
+            return;
+        }
         double stylePoints = StyleMeter.getStylePoints();
         StyleRank currentRank = StyleMeter.getCurrentRank();
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
-
-        MinecraftClient client = MinecraftClient.getInstance();
+        
         TextRenderer renderer = client.textRenderer;
 
         int width = context.getScaledWindowWidth();

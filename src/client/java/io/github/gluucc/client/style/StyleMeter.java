@@ -70,4 +70,12 @@ public class StyleMeter {
     public static int getCurrentTick() {
         return currentTick;
     }
+
+    public static void reset() {
+        currentRank = StyleRank.UNRANKED;
+        currentTick = 0;
+        stylePoints = 0;
+        styleQueue.clear();
+        styleList.clear();
+    }
 }
