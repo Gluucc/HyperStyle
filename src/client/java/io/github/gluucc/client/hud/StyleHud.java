@@ -24,9 +24,6 @@ public class StyleHud {
         MinecraftClient client = MinecraftClient.getInstance();
         TextRenderer renderer = client.textRenderer;
 
-        int pointsGaugeWidth = renderer.getWidth(Integer.toString((int) stylePoints));
-        int rankGaugeWidth = renderer.getWidth(currentRank.getStyleLabel());
-
         int width = context.getScaledWindowWidth();
 
         int meterX = width - TEXTURE_WIDTH - 10;
@@ -39,12 +36,11 @@ public class StyleHud {
         int entryOffsetY = 0;
 
         for(StyleEntry entry : styleList) {
-            String entryText = "+ " + entry.text();
+            String entryText = "+ " + entry.event().getEventLabel();
             if (entry.count() > 1) {
                 entryText += " x" + entry.count();
             }
-            int entryWidth = renderer.getWidth(entryText);
-            context.drawText(renderer, entryText, meterX, 45+entryOffsetY, entry.color(), false);
+            context.drawText(renderer, entryText, meterX, 45+entryOffsetY, entry.event().getEventColor(), false);
             entryOffsetY += renderer.fontHeight + 5;
         }
     }

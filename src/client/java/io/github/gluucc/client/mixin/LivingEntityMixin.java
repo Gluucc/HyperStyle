@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
 
-    @Inject(method = "onDamaged", at = @At("TAIL"))
+    @Inject(method = "onDamaged", at = @At("HEAD"))
     private void hyperstyle$trackDamage(DamageSource source, CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
         DamageHandler.onDamaged(entity, source);

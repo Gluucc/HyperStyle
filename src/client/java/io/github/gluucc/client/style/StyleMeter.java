@@ -18,18 +18,18 @@ public class StyleMeter {
         QueuedEvent pending = styleQueue.pollFirst();
         if(pending != null) {
             StyleEntry top = styleList.peekFirst();
-            if (top != null && top.text().equals(pending.text())) {
+            if (top != null && top.event() == pending.event()) {
                 styleList.pollFirst();
-                styleList.addFirst(new StyleEntry(pending.text(), top.count() + 1, currentTick, pending.color()));
+                styleList.addFirst(new StyleEntry(pending.event(), top.count() + 1, currentTick));
             } else {
                 if (styleList.size() >= 5) {
                     styleList.removeLast();
                 }
 
-                styleList.addFirst(new StyleEntry(pending.text(), 1, currentTick, pending.color()));
+                styleList.addFirst(new StyleEntry(pending.event(), 1, currentTick));
 
             }
-            stylePoints += pending.points();
+            stylePoints += pending.event().getEventPoints();
         }
 
         if (stylePoints > 0) {
@@ -51,8 +51,8 @@ public class StyleMeter {
         }
     }
 
-    public static void addStyle(String text, int points, int color) {
-        styleQueue.addLast(new QueuedEvent(text, points, color));
+    public static void addStyle(StyleEvent event, StyleCategory category) {
+        styleQueue.addLast(new QueuedEvent(event, category));
     }
 
     public static double getStylePoints() {
