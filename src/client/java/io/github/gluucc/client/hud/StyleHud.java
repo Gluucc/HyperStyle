@@ -12,9 +12,9 @@ import net.minecraft.util.Identifier;
 import java.util.Collection;
 
 public class StyleHud {
-    final static Identifier TEXTURE = HyperStyle.id("textures/gui/test1.png");
-    final static int TEXTURE_HEIGHT = 128;
-    final static int TEXTURE_WIDTH = 96;
+    static final Identifier TEXTURE = HyperStyle.id("textures/gui/test1.png");
+    static final int TEXTURE_HEIGHT = 128;
+    static final int TEXTURE_WIDTH = 96;
 
     public static void render(DrawContext context, float tickDelta){
         MinecraftClient client = MinecraftClient.getInstance();
@@ -24,7 +24,7 @@ public class StyleHud {
         double stylePoints = StyleMeter.getStylePoints();
         StyleRank currentRank = StyleMeter.getCurrentRank();
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
-        
+
         TextRenderer renderer = client.textRenderer;
 
         int width = context.getScaledWindowWidth();
@@ -33,8 +33,8 @@ public class StyleHud {
         int meterY = 10;
 
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        context.drawText(renderer, Integer.toString((int) stylePoints), meterX, 30, 0xFFFFFFFF, false);
-        context.drawText(renderer, currentRank.getStyleLabel(), meterX, 20, currentRank.getRankColor(), false);
+        context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+renderer.fontHeight+10, 0xFFFFFFFF, false);
+        context.drawText(renderer, currentRank.getStyleLabel(), meterX, meterY+renderer.fontHeight, currentRank.getRankColor(), false);
 
         int entryOffsetY = 0;
 
@@ -46,5 +46,7 @@ public class StyleHud {
             context.drawText(renderer, entryText, meterX, 45+entryOffsetY, entry.event().getEventColor(), false);
             entryOffsetY += renderer.fontHeight + 5;
         }
+
+        context.drawText(renderer, "FRESHNESS " + String.format("%.2f", StyleMeter.getFreshness()), meterX, meterY + 100 + renderer.fontHeight, 0xFFFFFFFF, false);
     }
 }
