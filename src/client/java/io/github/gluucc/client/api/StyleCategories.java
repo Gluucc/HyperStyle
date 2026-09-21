@@ -1,4 +1,4 @@
-package io.github.gluucc.client.style;
+package io.github.gluucc.client.api;
 
 import io.github.gluucc.HyperStyle;
 

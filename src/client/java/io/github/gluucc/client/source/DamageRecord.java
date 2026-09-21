@@ -1,4 +1,4 @@
-package io.github.gluucc.client.event;
+package io.github.gluucc.client.source;
 
 import net.minecraft.entity.damage.DamageSource;
 

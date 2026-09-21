@@ -1,6 +1,6 @@
-package io.github.gluucc.client.event;
+package io.github.gluucc.client.source;
 
-import io.github.gluucc.client.style.StyleEvent;
+import io.github.gluucc.client.api.StyleEvent;
 import io.github.gluucc.client.style.StyleMeter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;

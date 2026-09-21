@@ -1,7 +1,7 @@
 package io.github.gluucc.client.mixin;
 
-import io.github.gluucc.client.event.DamageHandler;
-import io.github.gluucc.client.event.DeathHandler;
+import io.github.gluucc.client.source.DamageHandler;
+import io.github.gluucc.client.source.DeathHandler;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import org.spongepowered.asm.mixin.Mixin;

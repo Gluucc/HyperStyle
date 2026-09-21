@@ -1,5 +1,10 @@
 package io.github.gluucc.client.style;
 
+import io.github.gluucc.client.api.StyleCategories;
+import io.github.gluucc.client.api.StyleCategory;
+import io.github.gluucc.client.api.StyleCategoryRegistry;
+import io.github.gluucc.client.api.StyleEvent;
+
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.HashSet;

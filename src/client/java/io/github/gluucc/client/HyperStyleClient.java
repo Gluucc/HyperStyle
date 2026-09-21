@@ -1,9 +1,9 @@
 package io.github.gluucc.client;
-import io.github.gluucc.client.event.DamageHandler;
-import io.github.gluucc.client.event.DeathHandler;
+import io.github.gluucc.client.source.DamageHandler;
+import io.github.gluucc.client.source.DeathHandler;
 import io.github.gluucc.client.hud.StyleHud;
-import io.github.gluucc.client.style.StyleCategories;
-import io.github.gluucc.client.style.StyleEvents;
+import io.github.gluucc.client.api.StyleCategories;
+import io.github.gluucc.client.api.StyleEvents;
 import io.github.gluucc.client.style.StyleMeter;
 import net.fabricmc.api.ClientModInitializer;
 
