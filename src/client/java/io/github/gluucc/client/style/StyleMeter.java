@@ -2,7 +2,7 @@ package io.github.gluucc.client.style;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Collections;
 
 public class StyleMeter {
@@ -18,7 +18,6 @@ public class StyleMeter {
     private static final int MAX_FRESHNESS_LIST_AGE = 80;
     private static double freshness = 1;
     private static final double MAX_FRESHNESS_BONUS = 0.75;
-    private static final int CATEGORY_COUNT = StyleCategory.values().length - 1;
 
     public static void tick() {
         currentTick++;
@@ -38,22 +37,24 @@ public class StyleMeter {
 
             }
 
-            if (freshnessWindow.size() >= MAX_FRESHNESS_ENTRIES) {
-                freshnessWindow.removeLast();
-            }
-
-            if (pending.category() != StyleCategory.NONE) {
+            if (pending.category() != StyleCategories.NONE) {
                 freshnessWindow.addFirst(new FreshnessEntry(pending.category(), currentTick));
+                if (freshnessWindow.size() > MAX_FRESHNESS_ENTRIES) {
+                    freshnessWindow.removeLast();
+                }
             }
 
+
+
+            int categoryCount = StyleCategoryRegistry.values().size() - 1;
             int count = countDistinctCategories();
             if (count == 0) {
                 freshness = 1;
             } else {
-                freshness = 1 + (count - 1) / (CATEGORY_COUNT - 1.0) * MAX_FRESHNESS_BONUS;
+                freshness = 1 + (count - 1) / (categoryCount - 1.0) * MAX_FRESHNESS_BONUS;
             }
 
-            stylePoints += pending.event().getEventPoints() * freshness;
+            stylePoints += pending.event().points() * freshness;
         }
 
         if (stylePoints > 0) {
@@ -104,7 +105,7 @@ public class StyleMeter {
     }
 
     private static int countDistinctCategories() {
-        EnumSet<StyleCategory> distinct = EnumSet.noneOf(StyleCategory.class);
+        HashSet<StyleCategory> distinct = new HashSet<>();
         for (FreshnessEntry entry : freshnessWindow) {
             distinct.add(entry.category());
         }

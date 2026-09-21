@@ -39,11 +39,11 @@ public class StyleHud {
         int entryOffsetY = 0;
 
         for(StyleEntry entry : styleList) {
-            String entryText = "+ " + entry.event().getEventLabel();
+            String entryText = "+ " + entry.event().label();
             if (entry.count() > 1) {
                 entryText += " x" + entry.count();
             }
-            context.drawText(renderer, entryText, meterX, 45+entryOffsetY, entry.event().getEventColor(), false);
+            context.drawText(renderer, entryText, meterX, 45+entryOffsetY, entry.event().color(), false);
             entryOffsetY += renderer.fontHeight + 5;
         }
 

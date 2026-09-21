@@ -1,7 +1,9 @@
 package io.github.gluucc.client.event;
 
+import io.github.gluucc.client.style.StyleCategories;
 import io.github.gluucc.client.style.StyleCategory;
 import io.github.gluucc.client.style.StyleEvent;
+import io.github.gluucc.client.style.StyleEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -14,37 +16,37 @@ public class DamageClassifier {
         DamageSource source = record.source();
 
         if (source.isIn(DamageTypeTags.IS_FIRE) || source.isIn(DamageTypeTags.IS_EXPLOSION) || source.isIn(DamageTypeTags.IS_LIGHTNING) || source.isIn(DamageTypeTags.IS_FALL) || source.isIn(DamageTypeTags.IS_FREEZING) || source.isIn(DamageTypeTags.IS_DROWNING)) {
-            return StyleCategory.ENVIRONMENT;
+            return StyleCategories.ENVIRONMENT;
         }
 
         if (source.isIn(DamageTypeTags.IS_PROJECTILE)) {
-            return StyleCategory.RANGED;
+            return StyleCategories.RANGED;
         }
 
         // This method will get changed to isDirect() in 1.21+
-        return source.isIndirect() ? StyleCategory.NONE : StyleCategory.MELEE;
+        return source.isIndirect() ? StyleCategories.NONE : StyleCategories.MELEE;
     }
 
     public static StyleEvent resolveKillEvent(DamageRecord record) {
         DamageSource source = record.source();
 
         if (source.isIn(DamageTypeTags.IS_FIRE)) {
-            return StyleEvent.FRIED;
+            return StyleEvents.FRIED;
         }
 
         if (source.isIn(DamageTypeTags.IS_EXPLOSION) && record.heightAboveGround() > AIRBORNE_MIN_HEIGHT) {
-            return StyleEvent.FIREWORKS;
+            return StyleEvents.FIREWORKS;
         }
 
         if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
-            return StyleEvent.EXPLODED;
+            return StyleEvents.EXPLODED;
         }
 
         if (record.healthBefore() >= record.maxHealth() && record.maxHealth() >= 4){
-            return StyleEvent.INSTAKILL;
+            return StyleEvents.INSTAKILL;
         }
 
-        return StyleEvent.KILL;
+        return StyleEvents.KILL;
     }
 
     public static StyleEvent resolveHitEvent(DamageRecord record) {
@@ -53,11 +55,11 @@ public class DamageClassifier {
 
         // Temporary solution, will make a map with projectile and player state later
         if (player != null && !source.isIndirect() && !player.isOnGround() && player.getVelocity().y < -0.6) {
-            return StyleEvent.JUMPSHOT;
+            return StyleEvents.JUMPSHOT;
         }
 
         if (record.heightAboveGround() > AIRBORNE_MIN_HEIGHT) {
-            return StyleEvent.AIRSHOT;
+            return StyleEvents.AIRSHOT;
         }
 
         return null;

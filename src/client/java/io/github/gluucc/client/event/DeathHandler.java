@@ -1,8 +1,6 @@
 package io.github.gluucc.client.event;
 
-import io.github.gluucc.client.style.StyleCategory;
-import io.github.gluucc.client.style.StyleEvent;
-import io.github.gluucc.client.style.StyleMeter;
+import io.github.gluucc.client.style.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 
@@ -11,7 +9,7 @@ import java.util.ArrayDeque;
 public class DeathHandler {
     private static final ArrayDeque<Integer> recentKills = new ArrayDeque<>();
     private static final int KILLSTREAK_WINDOW = 20;
-    private static final int KILL_CREDIT_WINDOW = 1000;
+    private static final int KILL_CREDIT_WINDOW = 200;
 
     public static void onDeath(LivingEntity target) {
         DamageRecord record = DamageHandler.getLastDamage(target.getId());
@@ -34,15 +32,15 @@ public class DeathHandler {
             }
 
             if (recentKills.size() == 2) {
-                StyleMeter.addStyle(StyleEvent.DOUBLE_KILL, StyleCategory.NONE);
+                StyleMeter.addStyle(StyleEvents.DOUBLE_KILL, StyleCategories.NONE);
             }
 
             if (recentKills.size() == 3) {
-                StyleMeter.addStyle(StyleEvent.TRIPLE_KILL, StyleCategory.NONE);
+                StyleMeter.addStyle(StyleEvents.TRIPLE_KILL, StyleCategories.NONE);
             }
 
             if (recentKills.size() >= 4) {
-                StyleMeter.addStyle(StyleEvent.MULTIKILL, StyleCategory.NONE);
+                StyleMeter.addStyle(StyleEvents.MULTIKILL, StyleCategories.NONE);
             }
 
             DamageHandler.removeRecord(target.getId());

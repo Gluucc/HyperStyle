@@ -2,6 +2,8 @@ package io.github.gluucc.client;
 import io.github.gluucc.client.event.DamageHandler;
 import io.github.gluucc.client.event.DeathHandler;
 import io.github.gluucc.client.hud.StyleHud;
+import io.github.gluucc.client.style.StyleCategories;
+import io.github.gluucc.client.style.StyleEvents;
 import io.github.gluucc.client.style.StyleMeter;
 import net.fabricmc.api.ClientModInitializer;
 
@@ -16,6 +18,9 @@ public class HyperStyleClient implements ClientModInitializer {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		ClientTickEvents.END_CLIENT_TICK.register(client -> StyleMeter.tick());
 		HudRenderCallback.EVENT.register(StyleHud::render);
+
+		StyleEvents.init();
+		StyleCategories.init();
 
 		ClientEntityEvents.ENTITY_UNLOAD.register((entity, world) ->
 				DamageHandler.removeRecord(entity.getId()));
