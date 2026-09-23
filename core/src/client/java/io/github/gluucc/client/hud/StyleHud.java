@@ -33,20 +33,27 @@ public class StyleHud {
         int meterY = 10;
 
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+renderer.fontHeight+10, 0xFFFFFFFF, false);
-        context.drawText(renderer, currentRank.getStyleLabel(), meterX, meterY+renderer.fontHeight, currentRank.getRankColor(), false);
+        int lineSpacing = renderer.fontHeight + 3;
+        int offsetY = 10;
 
-        int entryOffsetY = 0;
+        context.drawText(renderer, currentRank.getStyleLabel(), meterX + 5, meterY+offsetY, currentRank.getRankColor(), false);
+        offsetY += lineSpacing;
+
+        context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+offsetY, 0xFFFFFFFF, false);
+        offsetY += lineSpacing;
+
 
         for(StyleEntry entry : styleList) {
             String entryText = "+ " + entry.event().label();
             if (entry.count() > 1) {
                 entryText += " x" + entry.count();
             }
-            context.drawText(renderer, entryText, meterX, 45+entryOffsetY, entry.event().color(), false);
-            entryOffsetY += renderer.fontHeight + 5;
+            context.drawText(renderer, entryText, meterX, meterY + offsetY, entry.event().color(), false);
+            offsetY += lineSpacing;
         }
 
-        context.drawText(renderer, "FRESHNESS " + String.format("%.2f", StyleMeter.getFreshness()), meterX, meterY + 100 + renderer.fontHeight, 0xFFFFFFFF, false);
+        String freshnessText = "FRESHNESS " + String.format("%.2f", StyleMeter.getFreshness());
+        int freshnessTextWidth = renderer.getWidth(freshnessText);
+        context.drawText(renderer, freshnessText, meterX + (TEXTURE_WIDTH - freshnessTextWidth) / 2, meterY + TEXTURE_HEIGHT - renderer.fontHeight, 0xFFFFFFFF, false);
     }
 }
