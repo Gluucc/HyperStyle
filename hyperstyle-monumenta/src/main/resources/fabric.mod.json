@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "hyperstyle-monumenta",
+  "version": "${version}",
+
+  "name": "hyperstyle-monumenta",
+  "description": "",
+  "authors": [],
+  "contact": {},
+
+  "license": "GPL-3.0",
+  "icon": "assets/hyperstyle-monumenta/icon.png",
+
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": ["io.github.gluucc.hyperstyleMonumenta.client.HyperstyleMonumentaDataGenerator"],
+    "client": ["io.github.gluucc.hyperstyleMonumenta.client.HyperstyleMonumentaClient"],
+    "main": ["io.github.gluucc.hyperstyleMonumenta.HyperstyleMonumenta"]
+  },
+
+  "mixins": [
+    "hyperstyle-monumenta.mixins.json"
+    ,{
+      "config": "hyperstyle-monumenta.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "~1.20.4",
+    "hyperstyle": "0.1.0",
+    "unofficial-monumenta-mod": "1.10"
+  }
+}
