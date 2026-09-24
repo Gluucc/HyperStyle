@@ -39,6 +39,10 @@ loom {
             sourceSet sourceSets.main
             sourceSet sourceSets.client
         }
+        "hyperstyle" {
+            sourceSet("client", ":core")
+            sourceSet("main", ":core")
+        }
     }
 }
 
@@ -52,17 +56,15 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    implementation files(coreProject.sourceSets.client.output)
-    modLocalRuntime(project(':core'))
+    implementation project(path: ":core", configuration: "namedElements")
+    clientImplementation this.project(":core").sourceSets.client.output
     modImplementation "maven.modrinth:5GO3q639:mbs17xsz"
 
     implementation 'com.github.Ascynx:discord-rpc-release:v3.4.0'
     implementation "com.github.Ascynx:java-discord-rpc:v2.0.2"
 
-    modApi('com.github.Ascynx:MCConfigFramework:mc1.20.4-SNAPSHOT')
-    include('com.github.Ascynx:MCConfigFramework:mc1.20.4-SNAPSHOT')
-    modApi('com.github.Ascynx:MCUIFramework:mc1.20.4-SNAPSHOT')
-    include('com.github.Ascynx:MCUIFramework:mc1.20.4-SNAPSHOT')
+    modImplementation('com.github.Ascynx:MCConfigFramework:mc1.20.4-SNAPSHOT')
+    modImplementation('com.github.Ascynx:MCUIFramework:mc1.20.4-SNAPSHOT')
 }
 
 processResources {
