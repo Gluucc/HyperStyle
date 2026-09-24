@@ -15,6 +15,8 @@ public class StyleHud {
     static final Identifier TEXTURE = HyperStyle.id("textures/gui/test1.png");
     static final int TEXTURE_HEIGHT = 128;
     static final int TEXTURE_WIDTH = 96;
+    static final int RANK_HEIGHT = 32;
+    static final int RANK_WIDTH = 92;
 
     public static void render(DrawContext context, float tickDelta){
         MinecraftClient client = MinecraftClient.getInstance();
@@ -34,9 +36,10 @@ public class StyleHud {
 
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         int lineSpacing = renderer.fontHeight + 3;
-        int offsetY = 10;
+        int offsetY = 18;
 
-        context.drawText(renderer, currentRank.getStyleLabel(), meterX + 5, meterY+offsetY, currentRank.getRankColor(), false);
+
+        context.drawTexture(HyperStyle.id(currentRank.getTexturePath()), meterX, meterY, 0, 0, RANK_WIDTH, RANK_HEIGHT, RANK_WIDTH, RANK_HEIGHT);
         offsetY += lineSpacing;
 
         context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+offsetY, 0xFFFFFFFF, false);
