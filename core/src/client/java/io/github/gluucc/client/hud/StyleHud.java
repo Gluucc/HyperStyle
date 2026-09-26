@@ -15,8 +15,14 @@ public class StyleHud {
     static final Identifier TEXTURE = HyperStyle.id("textures/gui/test1.png");
     static final int TEXTURE_HEIGHT = 128;
     static final int TEXTURE_WIDTH = 96;
+
     static final int RANK_HEIGHT = 32;
     static final int RANK_WIDTH = 92;
+
+    private static float rankScale = 1.0f;
+    private static float rankScaleVelocity = 0.0f;
+
+    static int lastCreatedAt = -1;
 
     public static void render(DrawContext context, float tickDelta){
         MinecraftClient client = MinecraftClient.getInstance();
@@ -39,7 +45,45 @@ public class StyleHud {
         int offsetY = 18;
 
 
-        context.drawTexture(HyperStyle.id(currentRank.getTexturePath()), meterX, meterY, 0, 0, RANK_WIDTH, RANK_HEIGHT, RANK_WIDTH, RANK_HEIGHT);
+        StyleEntry headEntry = styleList.stream().findFirst().orElse(null);
+        if (headEntry != null && headEntry.createdAt() != lastCreatedAt) {
+            rankScaleVelocity = 0.03f;
+            lastCreatedAt = headEntry.createdAt();
+        }
+
+        if (rankScaleVelocity != 0.0f) {
+            rankScale += rankScaleVelocity;
+
+            if (rankScale >= 1.2f) {
+                rankScale = 1.2f;
+                rankScaleVelocity = -0.02f;
+            }
+
+            if (rankScale <= 1.0f) {
+                rankScale = 1.0f;
+                rankScaleVelocity = 0.0f;
+            }
+        }
+
+
+        int currentRankWidth = Math.round(RANK_WIDTH * rankScale);
+        int currentRankHeight = Math.round(RANK_HEIGHT * rankScale);
+
+        int rankX = meterX + (TEXTURE_WIDTH - currentRankWidth) / 2;
+        int rankY = meterY + (RANK_HEIGHT - currentRankHeight) / 2;
+
+        context.drawTexture(
+                HyperStyle.id(currentRank.getTexturePath()),
+                rankX,
+                rankY,
+                0,
+                0,
+                currentRankWidth,
+                currentRankHeight,
+                currentRankWidth,
+                currentRankHeight
+        );
+        //context.drawTexture(HyperStyle.id(currentRank.getTexturePath()), meterX, meterY, 0, 0, RANK_WIDTH, RANK_HEIGHT, RANK_WIDTH, RANK_HEIGHT);
         offsetY += lineSpacing;
 
         context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+offsetY, 0xFFFFFFFF, false);
