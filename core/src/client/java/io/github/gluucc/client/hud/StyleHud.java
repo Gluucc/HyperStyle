@@ -72,18 +72,7 @@ public class StyleHud {
         int rankX = meterX + (TEXTURE_WIDTH - currentRankWidth) / 2;
         int rankY = meterY + (RANK_HEIGHT - currentRankHeight) / 2;
 
-        context.drawTexture(
-                HyperStyle.id(currentRank.getTexturePath()),
-                rankX,
-                rankY,
-                0,
-                0,
-                currentRankWidth,
-                currentRankHeight,
-                currentRankWidth,
-                currentRankHeight
-        );
-        //context.drawTexture(HyperStyle.id(currentRank.getTexturePath()), meterX, meterY, 0, 0, RANK_WIDTH, RANK_HEIGHT, RANK_WIDTH, RANK_HEIGHT);
+        context.drawTexture(HyperStyle.id(currentRank.getTexturePath()), rankX, rankY, 0, 0, currentRankWidth, currentRankHeight, currentRankWidth, currentRankHeight);
         offsetY += lineSpacing;
 
         context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+offsetY, 0xFFFFFFFF, false);
