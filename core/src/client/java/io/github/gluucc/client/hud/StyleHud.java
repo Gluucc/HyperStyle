@@ -19,10 +19,14 @@ public class StyleHud {
     static final int RANK_HEIGHT = 32;
     static final int RANK_WIDTH = 92;
 
-    private static float rankScale = 1.0f;
-
     static int lastCreatedAt = -1;
-    static long animationStartTick = -1L;
+    static int animationStartTick = -1;
+
+    static final float GROW_PHASE = 0.4f;
+    static final float HOLD_PHASE = 0.1f;
+    static final float DECAY_PHASE = 0.5f;
+    static final float RANK_SCALE_MAX = 1.3f;
+
 
     public static void tick() {
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
@@ -41,25 +45,27 @@ public class StyleHud {
             return;
         }
 
+
+        float rankScale = 1.0f;
         if (animationStartTick != -1L) {
             long currentTick = StyleMeter.getCurrentTick();
             float currentTickFloat = currentTick + tickDelta;
             float duration = 6.0f; // tick
-            float progress = (float)(currentTickFloat - animationStartTick) / duration;
+            float progress = (currentTickFloat - animationStartTick) / duration;
 
             if (progress >= 1.0f) {
                 rankScale = 1.0f;
-                animationStartTick = -1L;
+                animationStartTick = -1;
             } else {
-                if (progress < 0.4f) {
-                    float growProgress = progress / 0.5f;
-                    rankScale = 1.0f + 0.2f * growProgress;
-                } else if (progress < 0.5f) {
-                    rankScale = 1.2f;
+                if (progress < GROW_PHASE) {
+                    float growProgress = progress / GROW_PHASE;
+                    rankScale = 1.0f + 0.3f * growProgress;
+                } else if (progress < GROW_PHASE + HOLD_PHASE) {
+                    rankScale = RANK_SCALE_MAX;
                 } else {
-                    float decayProgress = (progress - 0.6f) / 0.4f;
+                    float decayProgress = (progress - (GROW_PHASE + HOLD_PHASE)) / DECAY_PHASE;
                     float easedDecay = (float)(1.0f - Math.pow(1.0f - decayProgress, 3.0f));
-                    rankScale = 1.2f - 0.2f * easedDecay;
+                    rankScale = RANK_SCALE_MAX - 0.3f * easedDecay;
                 }
             }
         }
