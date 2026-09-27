@@ -16,11 +16,60 @@ public class StyleHud {
     static final int TEXTURE_HEIGHT = 128;
     static final int TEXTURE_WIDTH = 96;
 
+    static final int RANK_HEIGHT = 32;
+    static final int RANK_WIDTH = 92;
+
+    static int lastCreatedAt = -1;
+    static int animationStartTick = -1;
+
+    static final float GROW_PHASE = 0.4f;
+    static final float HOLD_PHASE = 0.1f;
+    static final float DECAY_PHASE = 0.5f;
+    static final float RANK_SCALE_MAX = 1.3f;
+
+
+    public static void tick() {
+        Collection<StyleEntry> styleList = StyleMeter.getStyleList();
+        StyleEntry headEntry = styleList.stream().findFirst().orElse(null);
+
+        if (headEntry != null && headEntry.createdAt() != lastCreatedAt) {
+            lastCreatedAt = headEntry.createdAt();
+            animationStartTick = StyleMeter.getCurrentTick();
+        }
+    }
+
+
     public static void render(DrawContext context, float tickDelta){
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.currentScreen != null || client.options.hudHidden) {
             return;
         }
+
+
+        float rankScale = 1.0f;
+        if (animationStartTick != -1L) {
+            long currentTick = StyleMeter.getCurrentTick();
+            float currentTickFloat = currentTick + tickDelta;
+            float duration = 6.0f; // tick
+            float progress = (currentTickFloat - animationStartTick) / duration;
+
+            if (progress >= 1.0f) {
+                rankScale = 1.0f;
+                animationStartTick = -1;
+            } else {
+                if (progress < GROW_PHASE) {
+                    float growProgress = progress / GROW_PHASE;
+                    rankScale = 1.0f + 0.3f * growProgress;
+                } else if (progress < GROW_PHASE + HOLD_PHASE) {
+                    rankScale = RANK_SCALE_MAX;
+                } else {
+                    float decayProgress = (progress - (GROW_PHASE + HOLD_PHASE)) / DECAY_PHASE;
+                    float easedDecay = (float)(1.0f - Math.pow(1.0f - decayProgress, 3.0f));
+                    rankScale = RANK_SCALE_MAX - 0.3f * easedDecay;
+                }
+            }
+        }
+
         double stylePoints = StyleMeter.getStylePoints();
         StyleRank currentRank = StyleMeter.getCurrentRank();
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
@@ -34,9 +83,15 @@ public class StyleHud {
 
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         int lineSpacing = renderer.fontHeight + 3;
-        int offsetY = 10;
+        int offsetY = 18;
 
-        context.drawText(renderer, currentRank.getStyleLabel(), meterX + 5, meterY+offsetY, currentRank.getRankColor(), false);
+        int currentRankWidth = Math.round(RANK_WIDTH * rankScale);
+        int currentRankHeight = Math.round(RANK_HEIGHT * rankScale);
+
+        int rankX = meterX + (TEXTURE_WIDTH - currentRankWidth) / 2;
+        int rankY = meterY + (RANK_HEIGHT - currentRankHeight) / 2;
+
+        context.drawTexture(currentRank.getTexture(), rankX, rankY, 0, 0, currentRankWidth, currentRankHeight, currentRankWidth, currentRankHeight);
         offsetY += lineSpacing;
 
         context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+offsetY, 0xFFFFFFFF, false);

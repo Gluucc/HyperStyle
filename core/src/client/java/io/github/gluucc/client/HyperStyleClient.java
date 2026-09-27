@@ -16,7 +16,7 @@ public class HyperStyleClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
-		ClientTickEvents.END_CLIENT_TICK.register(client -> StyleMeter.tick());
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {StyleMeter.tick(); StyleHud.tick();});
 		HudRenderCallback.EVENT.register(StyleHud::render);
 
 		StyleEvents.init();
