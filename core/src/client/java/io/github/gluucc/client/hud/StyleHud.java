@@ -20,15 +20,50 @@ public class StyleHud {
     static final int RANK_WIDTH = 92;
 
     private static float rankScale = 1.0f;
-    private static float rankScaleVelocity = 0.0f;
 
     static int lastCreatedAt = -1;
+    static long animationStartTick = -1L;
+
+    public static void tick() {
+        Collection<StyleEntry> styleList = StyleMeter.getStyleList();
+        StyleEntry headEntry = styleList.stream().findFirst().orElse(null);
+
+        if (headEntry != null && headEntry.createdAt() != lastCreatedAt) {
+            lastCreatedAt = headEntry.createdAt();
+            animationStartTick = StyleMeter.getCurrentTick();
+        }
+    }
+
 
     public static void render(DrawContext context, float tickDelta){
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.currentScreen != null || client.options.hudHidden) {
             return;
         }
+
+        if (animationStartTick != -1L) {
+            long currentTick = StyleMeter.getCurrentTick();
+            float currentTickFloat = currentTick + tickDelta;
+            float duration = 6.0f; // tick
+            float progress = (float)(currentTickFloat - animationStartTick) / duration;
+
+            if (progress >= 1.0f) {
+                rankScale = 1.0f;
+                animationStartTick = -1L;
+            } else {
+                if (progress < 0.4f) {
+                    float growProgress = progress / 0.5f;
+                    rankScale = 1.0f + 0.2f * growProgress;
+                } else if (progress < 0.5f) {
+                    rankScale = 1.2f;
+                } else {
+                    float decayProgress = (progress - 0.6f) / 0.4f;
+                    float easedDecay = (float)(1.0f - Math.pow(1.0f - decayProgress, 3.0f));
+                    rankScale = 1.2f - 0.2f * easedDecay;
+                }
+            }
+        }
+
         double stylePoints = StyleMeter.getStylePoints();
         StyleRank currentRank = StyleMeter.getCurrentRank();
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
@@ -44,35 +79,13 @@ public class StyleHud {
         int lineSpacing = renderer.fontHeight + 3;
         int offsetY = 18;
 
-
-        StyleEntry headEntry = styleList.stream().findFirst().orElse(null);
-        if (headEntry != null && headEntry.createdAt() != lastCreatedAt) {
-            rankScaleVelocity = 0.03f;
-            lastCreatedAt = headEntry.createdAt();
-        }
-
-        if (rankScaleVelocity != 0.0f) {
-            rankScale += rankScaleVelocity;
-
-            if (rankScale >= 1.2f) {
-                rankScale = 1.2f;
-                rankScaleVelocity = -0.02f;
-            }
-
-            if (rankScale <= 1.0f) {
-                rankScale = 1.0f;
-                rankScaleVelocity = 0.0f;
-            }
-        }
-
-
         int currentRankWidth = Math.round(RANK_WIDTH * rankScale);
         int currentRankHeight = Math.round(RANK_HEIGHT * rankScale);
 
         int rankX = meterX + (TEXTURE_WIDTH - currentRankWidth) / 2;
         int rankY = meterY + (RANK_HEIGHT - currentRankHeight) / 2;
 
-        context.drawTexture(HyperStyle.id(currentRank.getTexturePath()), rankX, rankY, 0, 0, currentRankWidth, currentRankHeight, currentRankWidth, currentRankHeight);
+        context.drawTexture(currentRank.getTexture(), rankX, rankY, 0, 0, currentRankWidth, currentRankHeight, currentRankWidth, currentRankHeight);
         offsetY += lineSpacing;
 
         context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+offsetY, 0xFFFFFFFF, false);
