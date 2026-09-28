@@ -7,6 +7,7 @@ import io.github.gluucc.client.api.StyleEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.registry.tag.DamageTypeTags;
 
 public class DamageClassifier {
@@ -40,6 +41,10 @@ public class DamageClassifier {
 
         if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
             return StyleEvents.EXPLODED;
+        }
+
+        if (source.isIn(DamageTypeTags.IS_FALL)) {
+            return StyleEvents.SPLATTERED;
         }
 
         if (record.healthBefore() >= record.maxHealth() && record.maxHealth() >= 4){
