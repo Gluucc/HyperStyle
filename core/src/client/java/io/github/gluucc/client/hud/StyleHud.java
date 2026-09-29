@@ -1,5 +1,6 @@
 package io.github.gluucc.client.hud;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.gluucc.HyperStyle;
 import io.github.gluucc.client.style.StyleEntry;
 import io.github.gluucc.client.style.StyleMeter;
@@ -8,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Collection;
 
@@ -81,6 +83,9 @@ public class StyleHud {
         int meterX = width - TEXTURE_WIDTH - 10;
         int meterY = 10;
 
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         int lineSpacing = renderer.fontHeight + 3;
         int offsetY = 18;
@@ -93,6 +98,8 @@ public class StyleHud {
 
         context.drawTexture(currentRank.getTexture(), rankX, rankY, 0, 0, currentRankWidth, currentRankHeight, currentRankWidth, currentRankHeight);
         offsetY += lineSpacing;
+
+        RenderSystem.disableBlend();
 
         context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+offsetY, 0xFFFFFFFF, false);
         offsetY += lineSpacing;
