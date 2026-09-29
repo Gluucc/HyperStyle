@@ -28,6 +28,8 @@ public class StyleHud {
     static final float DECAY_PHASE = 0.5f;
     static final float RANK_SCALE_MAX = 1.3f;
 
+    private static double peakPoints = 0;
+
 
     public static void tick() {
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
@@ -103,8 +105,17 @@ public class StyleHud {
 
         double percent;
         if (currentRank.getNextRank() == currentRank) {
-            percent = 100.0;
+            peakPoints = Math.max(peakPoints, stylePoints);
+
+            double range = peakPoints - currentRank.getReqPoints();
+            if(range <= 0) {
+                percent = 100.0;
+            } else {
+                percent = (stylePoints - currentRank.getReqPoints()) / range * 100;
+            }
         } else {
+            peakPoints = 0;
+
             int rangeSize = (currentRank.getNextRank().getReqPoints()) - currentRank.getReqPoints();
             double currentPointsFromZero = stylePoints - currentRank.getReqPoints();
             percent = (currentPointsFromZero / rangeSize) * 100;
