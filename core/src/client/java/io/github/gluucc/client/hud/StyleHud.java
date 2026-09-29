@@ -98,9 +98,26 @@ public class StyleHud {
         context.drawTexture(currentRank.getTexture(), rankX, rankY, 0, 0, currentRankWidth, currentRankHeight, currentRankWidth, currentRankHeight);
         offsetY += lineSpacing;
 
+
         RenderSystem.disableBlend();
 
-        context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+offsetY, 0xFFFFFFFF, false);
+        double percent;
+        if (currentRank.getNextRank() == currentRank) {
+            percent = 100.0;
+        } else {
+            int rangeSize = (currentRank.getNextRank().getReqPoints()) - currentRank.getReqPoints();
+            double currentPointsFromZero = stylePoints - currentRank.getReqPoints();
+            percent = (currentPointsFromZero / rangeSize) * 100;
+        }
+
+        int filledWidth = (int)(TEXTURE_WIDTH * (percent / 100.0));
+
+        context.fill(meterX, meterY+offsetY, meterX + TEXTURE_WIDTH, meterY + 6 + offsetY, 0xFF333333);
+
+        if (filledWidth > 0) {
+            context.fill(meterX, meterY+offsetY, meterX + filledWidth, meterY + 6 + offsetY, 0xFFFFFFFF);
+        }
+
         offsetY += lineSpacing;
 
 

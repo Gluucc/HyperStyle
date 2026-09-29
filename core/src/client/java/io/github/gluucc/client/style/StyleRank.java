@@ -38,6 +38,15 @@ public enum StyleRank {
         return this.reqPoints;
     }
 
+    public StyleRank getNextRank() {
+        StyleRank[] all = values();
+        int nextOrdinal = this.ordinal() + 1;
+        if(nextOrdinal >= all.length) {
+            return this;
+        }
+        return all[nextOrdinal];
+    }
+
     public double getDecayMultiplier() {
         return this.decayMultiplier;
     }
