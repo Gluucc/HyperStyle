@@ -28,7 +28,6 @@ public class StyleHud {
     static final float DECAY_PHASE = 0.5f;
     static final float RANK_SCALE_MAX = 1.3f;
 
-
     public static void tick() {
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
         StyleEntry headEntry = styleList.stream().findFirst().orElse(null);
@@ -98,9 +97,18 @@ public class StyleHud {
         context.drawTexture(currentRank.getTexture(), rankX, rankY, 0, 0, currentRankWidth, currentRankHeight, currentRankWidth, currentRankHeight);
         offsetY += lineSpacing;
 
+
         RenderSystem.disableBlend();
 
-        context.drawText(renderer, Integer.toString((int) stylePoints), meterX, meterY+offsetY, 0xFFFFFFFF, false);
+        double percent = StyleMeter.getRankPercent();
+        int filledWidth = (int)(TEXTURE_WIDTH * (percent / 100.0));
+
+        context.fill(meterX, meterY+offsetY, meterX + TEXTURE_WIDTH, meterY + 6 + offsetY, 0xFF333333);
+
+        if (filledWidth > 0) {
+            context.fill(meterX, meterY+offsetY, meterX + filledWidth, meterY + 6 + offsetY, 0xFFFFFFFF);
+        }
+
         offsetY += lineSpacing;
 
 
