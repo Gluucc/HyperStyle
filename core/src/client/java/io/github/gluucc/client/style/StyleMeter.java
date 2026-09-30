@@ -23,6 +23,7 @@ public class StyleMeter {
     private static final int MAX_FRESHNESS_LIST_AGE = 80;
     private static double freshness = 1;
     private static final double MAX_FRESHNESS_BONUS = 0.75;
+    private static double peakPoints = 0;
 
     public static void tick() {
         currentTick++;
@@ -109,6 +110,29 @@ public class StyleMeter {
         return freshness;
     }
 
+    public static double getRankPercent() {
+
+        double percent;
+        if (currentRank.getNextRank() == currentRank) {
+            peakPoints = Math.max(peakPoints, stylePoints);
+
+            double range = peakPoints - currentRank.getReqPoints();
+            if(range <= 0) {
+                percent = 100.0;
+            } else {
+                percent = (stylePoints - currentRank.getReqPoints()) / range * 100;
+            }
+        } else {
+            peakPoints = 0;
+
+            int rangeSize = (currentRank.getNextRank().getReqPoints()) - currentRank.getReqPoints();
+            double currentPointsFromZero = stylePoints - currentRank.getReqPoints();
+            percent = (currentPointsFromZero / rangeSize) * 100;
+        }
+
+        return Math.max(0, Math.min(100, percent));
+    }
+
     private static int countDistinctCategories() {
         HashSet<StyleCategory> distinct = new HashSet<>();
         for (FreshnessEntry entry : freshnessWindow) {
@@ -125,5 +149,6 @@ public class StyleMeter {
         styleList.clear();
         freshnessWindow.clear();
         freshness = 1;
+        peakPoints = 0;
     }
 }
