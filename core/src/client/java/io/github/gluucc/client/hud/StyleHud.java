@@ -28,9 +28,6 @@ public class StyleHud {
     static final float DECAY_PHASE = 0.5f;
     static final float RANK_SCALE_MAX = 1.3f;
 
-    private static double peakPoints = 0;
-
-
     public static void tick() {
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
         StyleEntry headEntry = styleList.stream().findFirst().orElse(null);
@@ -103,24 +100,7 @@ public class StyleHud {
 
         RenderSystem.disableBlend();
 
-        double percent;
-        if (currentRank.getNextRank() == currentRank) {
-            peakPoints = Math.max(peakPoints, stylePoints);
-
-            double range = peakPoints - currentRank.getReqPoints();
-            if(range <= 0) {
-                percent = 100.0;
-            } else {
-                percent = (stylePoints - currentRank.getReqPoints()) / range * 100;
-            }
-        } else {
-            peakPoints = 0;
-
-            int rangeSize = (currentRank.getNextRank().getReqPoints()) - currentRank.getReqPoints();
-            double currentPointsFromZero = stylePoints - currentRank.getReqPoints();
-            percent = (currentPointsFromZero / rangeSize) * 100;
-        }
-
+        double percent = StyleMeter.getRankPercent();
         int filledWidth = (int)(TEXTURE_WIDTH * (percent / 100.0));
 
         context.fill(meterX, meterY+offsetY, meterX + TEXTURE_WIDTH, meterY + 6 + offsetY, 0xFF333333);
