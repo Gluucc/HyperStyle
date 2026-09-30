@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "hyperstyle-monumenta",
+  "id": "hyperstyle_monumenta",
   "version": "${version}",
 
   "name": "hyperstyle-monumenta",
@@ -13,7 +13,6 @@
 
   "environment": "client",
   "entrypoints": {
-    "fabric-datagen": ["io.github.gluucc.hyperstyleMonumenta.client.HyperstyleMonumentaDataGenerator"],
     "client": ["io.github.gluucc.hyperstyleMonumenta.client.HyperstyleMonumentaClient"],
     "main": ["io.github.gluucc.hyperstyleMonumenta.HyperstyleMonumenta"]
   },

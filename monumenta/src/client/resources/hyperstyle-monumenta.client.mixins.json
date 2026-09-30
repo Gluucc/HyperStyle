@@ -1,9 +1,12 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.gluucc.hyperstyleMonumenta.mixin.client",
+  "package": "io.github.gluucc.hyperstyleMonumenta.client.mixins",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "AbilityHandlerMixin",
+    "ClassUpdatePacketAccessor",
+    "AbilityUpdatePacketAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

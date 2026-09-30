@@ -35,7 +35,7 @@ loom {
     splitEnvironmentSourceSets()
 
     mods {
-        "hyperstyle-monumenta" {
+        "hyperstyle_monumenta" {
             sourceSet sourceSets.main
             sourceSet sourceSets.client
         }
