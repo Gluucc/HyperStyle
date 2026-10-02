@@ -13,6 +13,13 @@ import net.minecraft.util.Identifier;
 import java.util.Collection;
 
 public class StyleHud {
+    public enum HudMode {
+        DEFAULT,  // Auto: hidden for UNRANKED, shown otherwise
+        ON,
+        OFF
+    }
+    public static HudMode hudMode = HudMode.DEFAULT;
+
     static final Identifier TEXTURE = HyperStyle.id("textures/gui/test1.png");
     static final int TEXTURE_HEIGHT = 128;
     static final int TEXTURE_WIDTH = 96;
@@ -43,6 +50,19 @@ public class StyleHud {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.currentScreen != null || client.options.hudHidden) {
             return;
+        }
+
+        switch (hudMode) {
+            case OFF:
+                return;
+            case ON:
+                break;
+            case DEFAULT:
+            default:
+                if (StyleMeter.getCurrentRank() == StyleRank.UNRANKED) {
+                    return;
+                }
+                break;
         }
 
 
