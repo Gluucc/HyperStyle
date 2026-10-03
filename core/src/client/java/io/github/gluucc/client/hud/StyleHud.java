@@ -90,7 +90,6 @@ public class StyleHud {
             }
         }
 
-        double stylePoints = StyleMeter.getStylePoints();
         StyleRank currentRank = StyleMeter.getCurrentRank();
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
 
