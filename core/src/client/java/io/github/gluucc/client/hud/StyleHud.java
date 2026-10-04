@@ -47,6 +47,9 @@ public class StyleHud {
     static final float DECAY_PHASE = 0.5f;
     static final float RANK_SCALE_MAX = 1.3f;
 
+    static final double RANK_SCALE_MAX_WIDTH_DIFF = Math.ceil(((RANK_WIDTH * RANK_SCALE_MAX) - TEXTURE_WIDTH) / 2);
+    static final double RANK_SCALE_MAX_HEIGHT_DIFF = Math.ceil(((RANK_HEIGHT * RANK_SCALE_MAX) - RANK_HEIGHT) / 2);
+
     public static void tick() {
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
         StyleEntry headEntry = styleList.stream().findFirst().orElse(null);
@@ -190,13 +193,26 @@ public class StyleHud {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
+        // upper left and lower left
+        float x1 = meterX - rankX * (float) RANK_SCALE_MAX_WIDTH_DIFF;
+        // lower right and upper right
+        float x2 = meterX + TEXTURE_WIDTH + (float) RANK_SCALE_MAX_WIDTH_DIFF;
+        // upper left and upper right
+        float y1 = meterY - (float) RANK_SCALE_MAX_HEIGHT_DIFF;
+        // lower left and lower right
+        float y2 = meterY + TEXTURE_HEIGHT;
+
         Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(matrix4f, (float)0, (float)0, (float)1).texture(0.0f, 1.0f).next();
-        bufferBuilder.vertex(matrix4f, (float)0, (float)scaledHeight, (float)1).texture(0.0f, 0.0f).next();
-        bufferBuilder.vertex(matrix4f, (float)scaledWidth, (float)scaledHeight, (float)1).texture(1.0f, 0.0f).next();
-        bufferBuilder.vertex(matrix4f, (float)scaledWidth, (float)0, (float)1).texture(1.0f, 1.0f).next();
+        // upper left
+        bufferBuilder.vertex(matrix4f, x1, y1, (float)1).texture(x1 / scaledWidth, 1 - y1 / scaledHeight).next();
+        // lower left
+        bufferBuilder.vertex(matrix4f, x1, y2, (float)1).texture(x1 / scaledWidth, 1 - y2 / scaledHeight).next();
+        // lower right
+        bufferBuilder.vertex(matrix4f, x2, y2, (float)1).texture(x2 / scaledWidth, 1 - y2 / scaledHeight).next();
+        // upper right
+        bufferBuilder.vertex(matrix4f, x2, y1, (float)1).texture(x2 / scaledWidth, 1 - y1 / scaledHeight).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 
         RenderSystem.defaultBlendFunc();
