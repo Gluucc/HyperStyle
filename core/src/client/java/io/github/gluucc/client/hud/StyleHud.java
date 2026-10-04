@@ -1,7 +1,9 @@
 package io.github.gluucc.client.hud;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.systems.VertexSorter;
 import io.github.gluucc.HyperStyle;
 import io.github.gluucc.client.style.StyleEntry;
 import io.github.gluucc.client.style.StyleMeter;
@@ -11,11 +13,14 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 
 import java.util.Collection;
@@ -26,6 +31,7 @@ public class StyleHud {
         ON,
         OFF
     }
+
     public static HudMode hudMode = HudMode.DEFAULT;
 
     private static SimpleFramebuffer customBuffer;
@@ -36,7 +42,7 @@ public class StyleHud {
     static final int TEXTURE_HEIGHT = 275;
     static final int TEXTURE_WIDTH = 192;
 
-    static final int RANK_HEIGHT = 64;
+    static final int RANK_HEIGHT = 84;
     static final int RANK_WIDTH = 192;
 
     static int lastCreatedAt = -1;
@@ -46,6 +52,9 @@ public class StyleHud {
     static final float HOLD_PHASE = 0.1f;
     static final float DECAY_PHASE = 0.5f;
     static final float RANK_SCALE_MAX = 1.3f;
+
+    static final double RANK_SCALE_MAX_WIDTH_DIFF = Math.ceil(((RANK_WIDTH * RANK_SCALE_MAX) - TEXTURE_WIDTH) / 2);
+    static final double RANK_SCALE_MAX_HEIGHT_DIFF = Math.ceil(((RANK_HEIGHT * RANK_SCALE_MAX) - RANK_HEIGHT) / 2);
 
     public static void tick() {
         Collection<StyleEntry> styleList = StyleMeter.getStyleList();
@@ -58,7 +67,7 @@ public class StyleHud {
     }
 
 
-    public static void render(DrawContext context, float tickDelta){
+    public static void render(DrawContext context, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.currentScreen != null || client.options.hudHidden) {
             return;
@@ -96,7 +105,7 @@ public class StyleHud {
                     rankScale = RANK_SCALE_MAX;
                 } else {
                     float decayProgress = (progress - (GROW_PHASE + HOLD_PHASE)) / DECAY_PHASE;
-                    float easedDecay = (float)(1.0f - Math.pow(1.0f - decayProgress, 3.0f));
+                    float easedDecay = (float) (1.0f - Math.pow(1.0f - decayProgress, 3.0f));
                     rankScale = RANK_SCALE_MAX - 0.3f * easedDecay;
                 }
             }
@@ -126,15 +135,15 @@ public class StyleHud {
 
         customBuffer.beginWrite(true);
 
-        int meterX = scaledWidth - TEXTURE_WIDTH - 20;
-        int meterY = 20;
+        int meterX = scaledWidth - TEXTURE_WIDTH - 30;
+        int meterY = 30;
 
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         int lineSpacing = renderer.fontHeight + 3;
-        int offsetY = 52;
+        int offsetY = 72;
 
         int currentRankWidth = Math.round(RANK_WIDTH * rankScale);
         int currentRankHeight = Math.round(RANK_HEIGHT * rankScale);
@@ -148,12 +157,12 @@ public class StyleHud {
         RenderSystem.disableBlend();
 
         double percent = StyleMeter.getRankPercent();
-        int filledWidth = (int)(TEXTURE_WIDTH * (percent / 100.0));
+        int filledWidth = (int) (TEXTURE_WIDTH * (percent / 100.0));
 
-        context.fill(meterX, meterY+offsetY, meterX + TEXTURE_WIDTH, meterY + 10 + offsetY, 0xFF333333);
+        context.fill(meterX, meterY + offsetY, meterX + TEXTURE_WIDTH, meterY + 10 + offsetY, 0xFF000000);
 
         if (filledWidth > 0) {
-            context.fill(meterX, meterY+offsetY, meterX + filledWidth, meterY + 10 + offsetY, 0xFFFFFFFF);
+            context.fill(meterX, meterY + offsetY, meterX + filledWidth, meterY + 10 + offsetY, 0xFFFFFFFF);
         }
 
         offsetY += 20;
@@ -161,13 +170,13 @@ public class StyleHud {
 
         int largeLineSpacing = 22;
 
-        for(StyleEntry entry : styleList) {
-            String entryStr = "+ " + entry.event().label();
+        for (StyleEntry entry : styleList) {
+            MutableText entryText = Text.empty().fillStyle(customFontLarge);
+            entryText.append(Text.literal("+  ").formatted(Formatting.WHITE));
+            entryText.append(Text.literal(entry.event().label()));
             if (entry.count() > 1) {
-                entryStr += " x" + entry.count();
+                entryText.append(Text.literal(" x" + entry.count()).formatted(Formatting.WHITE));
             }
-
-            MutableText entryText = Text.literal(entryStr).setStyle(customFontLarge);
 
             context.drawText(renderer, entryText, meterX, meterY + offsetY, entry.event().color(), false);
             offsetY += largeLineSpacing;
@@ -190,15 +199,60 @@ public class StyleHud {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
+        MatrixStack matrices = context.getMatrices();
+        RenderSystem.backupProjectionMatrix();
+        customBuffer.setTexFilter(GlConst.GL_LINEAR);
+        Matrix4f projection = new Matrix4f();
+        float fov = (float) Math.toRadians(40);
+        Matrix4f perspectiveMatrix = projection.perspective(fov, (float) pixelWidth / pixelHeight, 0.1f, 1000);
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        RenderSystem.setProjectionMatrix(perspectiveMatrix, VertexSorter.BY_Z);
+        matrices.push();
+        matrixStack.push();
+
+        // upper left and lower left
+        float x1 = meterX - (float) RANK_SCALE_MAX_WIDTH_DIFF;
+        // lower right and upper right
+        float x2 = meterX + TEXTURE_WIDTH + (float) RANK_SCALE_MAX_WIDTH_DIFF;
+        // upper left and upper right
+        float y1 = meterY - (float) RANK_SCALE_MAX_HEIGHT_DIFF;
+        // lower left and lower right
+        float y2 = meterY + TEXTURE_HEIGHT + (float) RANK_SCALE_MAX_HEIGHT_DIFF;
+
+        float centerX = (x1 + x2) / 2;
+        float centerY = (y1 + y2) / 2;
+
+        float rightEdge = meterX + TEXTURE_WIDTH;
+
+        matrixStack.loadIdentity();
+        float z = scaledHeight / (2 * (float) Math.tan(fov / 2));
+        matrices.translate(rightEdge - ((double) scaledWidth / 2), ((double) scaledHeight / 2) - centerY, -z);
+
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-55.0f));
+
+        matrices.translate(centerX - rightEdge, 0, 0);
+
+        RenderSystem.applyModelViewMatrix();
+
         Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(matrix4f, (float)0, (float)0, (float)1).texture(0.0f, 1.0f).next();
-        bufferBuilder.vertex(matrix4f, (float)0, (float)scaledHeight, (float)1).texture(0.0f, 0.0f).next();
-        bufferBuilder.vertex(matrix4f, (float)scaledWidth, (float)scaledHeight, (float)1).texture(1.0f, 0.0f).next();
-        bufferBuilder.vertex(matrix4f, (float)scaledWidth, (float)0, (float)1).texture(1.0f, 1.0f).next();
+        // upper left
+        bufferBuilder.vertex(matrix4f, x1 - centerX, centerY - y1, (float) 0).texture(x1 / scaledWidth, 1 - y1 / scaledHeight).next();
+        // lower left
+        bufferBuilder.vertex(matrix4f, x1 - centerX, centerY - y2, (float) 0).texture(x1 / scaledWidth, 1 - y2 / scaledHeight).next();
+        // lower right
+        bufferBuilder.vertex(matrix4f, x2 - centerX, centerY - y2, (float) 0).texture(x2 / scaledWidth, 1 - y2 / scaledHeight).next();
+        // upper right
+        bufferBuilder.vertex(matrix4f, x2 - centerX, centerY - y1, (float) 0).texture(x2 / scaledWidth, 1 - y1 / scaledHeight).next();
+        RenderSystem.disableDepthTest();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        matrices.pop();
+        matrixStack.pop();
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.restoreProjectionMatrix();
 
+        RenderSystem.enableDepthTest();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
     }

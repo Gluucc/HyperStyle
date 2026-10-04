@@ -11,7 +11,7 @@ import java.util.ArrayDeque;
 
 public class DeathHandler {
     private static final ArrayDeque<Integer> recentKills = new ArrayDeque<>();
-    private static final int KILLSTREAK_WINDOW = 20;
+    private static final int KILLSTREAK_WINDOW = 10;
     private static final int KILL_CREDIT_WINDOW = 200;
 
     public static void onDeath(LivingEntity target) {
