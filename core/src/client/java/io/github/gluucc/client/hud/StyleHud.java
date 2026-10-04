@@ -1,7 +1,9 @@
 package io.github.gluucc.client.hud;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.systems.VertexSorter;
 import io.github.gluucc.HyperStyle;
 import io.github.gluucc.client.style.StyleEntry;
 import io.github.gluucc.client.style.StyleMeter;
@@ -11,11 +13,13 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 
 import java.util.Collection;
@@ -129,8 +133,8 @@ public class StyleHud {
 
         customBuffer.beginWrite(true);
 
-        int meterX = scaledWidth - TEXTURE_WIDTH - 20;
-        int meterY = 20;
+        int meterX = scaledWidth - TEXTURE_WIDTH - 30;
+        int meterY = 30;
 
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
@@ -193,28 +197,60 @@ public class StyleHud {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
+        MatrixStack matrices = context.getMatrices();
+        RenderSystem.backupProjectionMatrix();
+        customBuffer.setTexFilter(GlConst.GL_LINEAR);
+        Matrix4f projection = new Matrix4f();
+        float fov = (float) Math.toRadians(40);
+        Matrix4f perspectiveMatrix = projection.perspective(fov, (float) pixelWidth / pixelHeight, 0.1f, 1000);
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        RenderSystem.setProjectionMatrix(perspectiveMatrix, VertexSorter.BY_Z);
+        matrices.push();
+        matrixStack.push();
+
         // upper left and lower left
-        float x1 = meterX - rankX * (float) RANK_SCALE_MAX_WIDTH_DIFF;
+        float x1 = meterX - (float) RANK_SCALE_MAX_WIDTH_DIFF;
         // lower right and upper right
         float x2 = meterX + TEXTURE_WIDTH + (float) RANK_SCALE_MAX_WIDTH_DIFF;
         // upper left and upper right
         float y1 = meterY - (float) RANK_SCALE_MAX_HEIGHT_DIFF;
         // lower left and lower right
-        float y2 = meterY + TEXTURE_HEIGHT;
+        float y2 = meterY + TEXTURE_HEIGHT + (float) RANK_SCALE_MAX_HEIGHT_DIFF;
+
+        float centerX = (x1 + x2) / 2;
+        float centerY = (y1 + y2) / 2;
+
+        float rightEdge = meterX + TEXTURE_WIDTH;
+
+        matrixStack.loadIdentity();
+        float z = scaledHeight / (2 * (float) Math.tan(fov / 2));
+        matrices.translate(rightEdge - ((double) scaledWidth / 2), ((double) scaledHeight / 2) - centerY, -z);
+
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-55.0f));
+
+        matrices.translate(centerX - rightEdge, 0, 0);
+
+        RenderSystem.applyModelViewMatrix();
 
         Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         // upper left
-        bufferBuilder.vertex(matrix4f, x1, y1, (float)1).texture(x1 / scaledWidth, 1 - y1 / scaledHeight).next();
+        bufferBuilder.vertex(matrix4f, x1 - centerX, centerY - y1 , (float)0).texture(x1 / scaledWidth, 1 - y1 / scaledHeight).next();
         // lower left
-        bufferBuilder.vertex(matrix4f, x1, y2, (float)1).texture(x1 / scaledWidth, 1 - y2 / scaledHeight).next();
+        bufferBuilder.vertex(matrix4f, x1 - centerX, centerY - y2, (float)0).texture(x1 / scaledWidth, 1 - y2 / scaledHeight).next();
         // lower right
-        bufferBuilder.vertex(matrix4f, x2, y2, (float)1).texture(x2 / scaledWidth, 1 - y2 / scaledHeight).next();
+        bufferBuilder.vertex(matrix4f, x2 - centerX, centerY - y2, (float)0).texture(x2 / scaledWidth, 1 - y2 / scaledHeight).next();
         // upper right
-        bufferBuilder.vertex(matrix4f, x2, y1, (float)1).texture(x2 / scaledWidth, 1 - y1 / scaledHeight).next();
+        bufferBuilder.vertex(matrix4f, x2 - centerX, centerY - y1, (float)0).texture(x2 / scaledWidth, 1 - y1 / scaledHeight).next();
+        RenderSystem.disableDepthTest();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        matrices.pop();
+        matrixStack.pop();
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.restoreProjectionMatrix();
 
+        RenderSystem.enableDepthTest();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
     }
