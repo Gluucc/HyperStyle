@@ -40,7 +40,7 @@ public class StyleHud {
     static final int TEXTURE_HEIGHT = 275;
     static final int TEXTURE_WIDTH = 192;
 
-    static final int RANK_HEIGHT = 64;
+    static final int RANK_HEIGHT = 84;
     static final int RANK_WIDTH = 192;
 
     static int lastCreatedAt = -1;
@@ -141,7 +141,7 @@ public class StyleHud {
 
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         int lineSpacing = renderer.fontHeight + 3;
-        int offsetY = 52;
+        int offsetY = 72;
 
         int currentRankWidth = Math.round(RANK_WIDTH * rankScale);
         int currentRankHeight = Math.round(RANK_HEIGHT * rankScale);
@@ -157,7 +157,7 @@ public class StyleHud {
         double percent = StyleMeter.getRankPercent();
         int filledWidth = (int)(TEXTURE_WIDTH * (percent / 100.0));
 
-        context.fill(meterX, meterY+offsetY, meterX + TEXTURE_WIDTH, meterY + 10 + offsetY, 0xFF333333);
+        context.fill(meterX, meterY+offsetY, meterX + TEXTURE_WIDTH, meterY + 10 + offsetY, 0xFF000000);
 
         if (filledWidth > 0) {
             context.fill(meterX, meterY+offsetY, meterX + filledWidth, meterY + 10 + offsetY, 0xFFFFFFFF);
