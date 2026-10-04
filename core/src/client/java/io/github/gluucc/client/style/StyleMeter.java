@@ -103,10 +103,6 @@ public class StyleMeter {
         }
     }
 
-    public static double getStylePoints() {
-        return stylePoints;
-    }
-
     public static StyleRank getCurrentRank() {
         return currentRank;
     }
