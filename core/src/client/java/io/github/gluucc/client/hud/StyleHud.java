@@ -1,5 +1,6 @@
 package io.github.gluucc.client.hud;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.gluucc.HyperStyle;
 import io.github.gluucc.client.style.StyleEntry;
@@ -7,8 +8,15 @@ import io.github.gluucc.client.style.StyleMeter;
 import io.github.gluucc.client.style.StyleRank;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.*;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.client.render.Tessellator;
+import org.joml.Matrix4f;
 
 import java.util.Collection;
 
@@ -20,12 +28,16 @@ public class StyleHud {
     }
     public static HudMode hudMode = HudMode.DEFAULT;
 
-    static final Identifier TEXTURE = HyperStyle.id("textures/gui/test1.png");
-    static final int TEXTURE_HEIGHT = 128;
-    static final int TEXTURE_WIDTH = 96;
+    private static SimpleFramebuffer customBuffer;
 
-    static final int RANK_HEIGHT = 32;
-    static final int RANK_WIDTH = 92;
+    static final Identifier TEXTURE = HyperStyle.id("textures/gui/test3.png");
+    static final Identifier LARGE_FONT = HyperStyle.id("vcr_large");
+    static final Identifier SMALL_FONT = HyperStyle.id("vcr_small");
+    static final int TEXTURE_HEIGHT = 275;
+    static final int TEXTURE_WIDTH = 192;
+
+    static final int RANK_HEIGHT = 64;
+    static final int RANK_WIDTH = 192;
 
     static int lastCreatedAt = -1;
     static int animationStartTick = -1;
@@ -95,17 +107,34 @@ public class StyleHud {
 
         TextRenderer renderer = client.textRenderer;
 
-        int width = context.getScaledWindowWidth();
+        int scaledWidth = context.getScaledWindowWidth();
+        int scaledHeight = context.getScaledWindowHeight();
 
-        int meterX = width - TEXTURE_WIDTH - 10;
-        int meterY = 10;
+        int pixelWidth = client.getFramebuffer().textureWidth;
+        int pixelHeight = client.getFramebuffer().textureHeight;
+
+        if (customBuffer == null) {
+            customBuffer = new SimpleFramebuffer(pixelWidth, pixelHeight, true, MinecraftClient.IS_SYSTEM_MAC);
+        } else if (customBuffer.textureWidth != pixelWidth || customBuffer.textureHeight != pixelHeight) {
+            customBuffer.resize(pixelWidth, pixelHeight, MinecraftClient.IS_SYSTEM_MAC);
+        }
+
+        var mainBuffer = client.getFramebuffer();
+
+        customBuffer.setClearColor(0, 0, 0, 0);
+        customBuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+
+        customBuffer.beginWrite(true);
+
+        int meterX = scaledWidth - TEXTURE_WIDTH - 20;
+        int meterY = 20;
 
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
+        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         int lineSpacing = renderer.fontHeight + 3;
-        int offsetY = 18;
+        int offsetY = 52;
 
         int currentRankWidth = Math.round(RANK_WIDTH * rankScale);
         int currentRankHeight = Math.round(RANK_HEIGHT * rankScale);
@@ -116,32 +145,61 @@ public class StyleHud {
         context.drawTexture(currentRank.getTexture(), rankX, rankY, 0, 0, currentRankWidth, currentRankHeight, currentRankWidth, currentRankHeight);
         offsetY += lineSpacing;
 
-
         RenderSystem.disableBlend();
 
         double percent = StyleMeter.getRankPercent();
         int filledWidth = (int)(TEXTURE_WIDTH * (percent / 100.0));
 
-        context.fill(meterX, meterY+offsetY, meterX + TEXTURE_WIDTH, meterY + 6 + offsetY, 0xFF333333);
+        context.fill(meterX, meterY+offsetY, meterX + TEXTURE_WIDTH, meterY + 10 + offsetY, 0xFF333333);
 
         if (filledWidth > 0) {
-            context.fill(meterX, meterY+offsetY, meterX + filledWidth, meterY + 6 + offsetY, 0xFFFFFFFF);
+            context.fill(meterX, meterY+offsetY, meterX + filledWidth, meterY + 10 + offsetY, 0xFFFFFFFF);
         }
 
-        offsetY += lineSpacing;
+        offsetY += 20;
+        Style customFontLarge = Style.EMPTY.withFont(LARGE_FONT);
 
+        int largeLineSpacing = 22;
 
         for(StyleEntry entry : styleList) {
-            String entryText = "+ " + entry.event().label();
+            String entryStr = "+ " + entry.event().label();
             if (entry.count() > 1) {
-                entryText += " x" + entry.count();
+                entryStr += " x" + entry.count();
             }
+
+            MutableText entryText = Text.literal(entryStr).setStyle(customFontLarge);
+
             context.drawText(renderer, entryText, meterX, meterY + offsetY, entry.event().color(), false);
-            offsetY += lineSpacing;
+            offsetY += largeLineSpacing;
         }
 
-        String freshnessText = "FRESHNESS " + String.format("%.2f", StyleMeter.getFreshness());
-        int freshnessTextWidth = renderer.getWidth(freshnessText);
+        Style customFontSmall = Style.EMPTY.withFont(SMALL_FONT);
+
+        String freshnessStr = "FRESHNESS: " + String.format("%.2f", StyleMeter.getFreshness());
+        MutableText freshnessText = Text.literal(freshnessStr).setStyle(customFontSmall);
+
+        int freshnessTextWidth = renderer.getWidth(freshnessText.asOrderedText());
         context.drawText(renderer, freshnessText, meterX + (TEXTURE_WIDTH - freshnessTextWidth) / 2, meterY + TEXTURE_HEIGHT - renderer.fontHeight, 0xFFFFFFFF, false);
+
+        customBuffer.endWrite();
+        mainBuffer.beginWrite(true);
+
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShaderTexture(0, customBuffer.getColorAttachment());
+
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+
+        Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(matrix4f, (float)0, (float)0, (float)1).texture(0.0f, 1.0f).next();
+        bufferBuilder.vertex(matrix4f, (float)0, (float)scaledHeight, (float)1).texture(0.0f, 0.0f).next();
+        bufferBuilder.vertex(matrix4f, (float)scaledWidth, (float)scaledHeight, (float)1).texture(1.0f, 0.0f).next();
+        bufferBuilder.vertex(matrix4f, (float)scaledWidth, (float)0, (float)1).texture(1.0f, 1.0f).next();
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
     }
 }
