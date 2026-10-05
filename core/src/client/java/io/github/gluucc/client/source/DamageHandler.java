@@ -16,6 +16,7 @@ import java.util.Map;
 public class DamageHandler {
     private static final Map<Integer, DamageRecord> lastDamage = new HashMap<>();
     private static final int MAX_RAYCAST = 5;
+    private static float lastHealth = -1;
 
     public static void onDamaged(LivingEntity target, DamageSource source) {
         DamageRecord previous = lastDamage.get(target.getId());
@@ -42,6 +43,22 @@ public class DamageHandler {
                 StyleMeter.addStyle(hit, DamageClassifier.classify(record));
             }
         }
+    }
+
+    public static void onHealthChanged(LivingEntity entity) {
+        float currentHealth = entity.getHealth() + entity.getAbsorptionAmount();
+
+        if (lastHealth < 0) {
+            lastHealth = currentHealth;
+            return;
+        }
+
+        if (currentHealth < lastHealth) {
+            float damage = lastHealth - currentHealth;
+            StyleMeter.penalize(damage * 10);
+        }
+
+        lastHealth = currentHealth;
     }
 
     public static DamageRecord getLastDamage(int entityId) {

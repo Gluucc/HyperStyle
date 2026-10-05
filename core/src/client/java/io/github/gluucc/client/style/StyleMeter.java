@@ -90,8 +90,17 @@ public class StyleMeter {
         styleQueue.addLast(new QueuedEvent(event, category));
     }
 
-    public static double getStylePoints() {
-        return stylePoints;
+    public static void penalize(float amount) {
+        if (amount <= 0) return;
+
+        double basePenalty = amount * 0.5;
+        double rankMultiplier = getCurrentRank().getDecayMultiplier();
+        double actualPenalty = Math.min(basePenalty * rankMultiplier, stylePoints * 0.8);
+
+        if (actualPenalty > 0) {
+            stylePoints -= actualPenalty;
+            if (stylePoints < 0) stylePoints = 0;
+        }
     }
 
     public static StyleRank getCurrentRank() {
