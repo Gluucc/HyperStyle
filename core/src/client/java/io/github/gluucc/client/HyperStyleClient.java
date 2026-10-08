@@ -1,10 +1,12 @@
 package io.github.gluucc.client;
+import io.github.gluucc.HyperStyle;
 import io.github.gluucc.client.hud.StyleHud;
 import io.github.gluucc.client.hud.StyleHud.HudMode;
 import io.github.gluucc.client.source.DamageHandler;
 import io.github.gluucc.client.source.DeathHandler;
 import io.github.gluucc.client.api.StyleCategories;
 import io.github.gluucc.client.api.StyleEvents;
+import io.github.gluucc.client.source.SpawnerBreakHandler;
 import io.github.gluucc.client.style.StyleMeter;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -13,6 +15,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.event.client.player.ClientPlayerBlockBreakEvents;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 
@@ -50,6 +54,13 @@ public class HyperStyleClient implements ClientModInitializer {
 
 		StyleEvents.init();
 		StyleCategories.init();
+
+		ClientPlayerBlockBreakEvents.AFTER.register(((world, player, pos, state) -> {
+			if (state.isOf(Blocks.SPAWNER)) {
+				SpawnerBreakHandler.returnBirthControl();
+				HyperStyle.LOGGER.info("the spawner has been broker");
+			}
+		}));
 
 		ClientEntityEvents.ENTITY_UNLOAD.register((entity, world) ->
 				DamageHandler.removeRecord(entity.getId()));

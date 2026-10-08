@@ -28,5 +28,5 @@ public class StyleEvents {
     public static final StyleEvent AIRSHOT = register("airshot", "AIRSHOT", 50, 0xFF00FFFF);
     public static final StyleEvent JUMPSHOT = register("jumpshot", "JUMPSHOT", 25, 0xFF00FFFF);
     public static final StyleEvent SPLATTERED = register("splattered", "SPLATTERED", 100, 0xFFFFFFFF);
-
+    public static final StyleEvent BIRTH_CONTROL = register("birth_control", "BIRTH CONTROL", 50, 0xFFFFFFFF);
 }
