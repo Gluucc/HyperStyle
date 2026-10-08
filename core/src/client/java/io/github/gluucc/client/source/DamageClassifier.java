@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.registry.tag.DamageTypeTags;
 
 public class DamageClassifier {
@@ -30,6 +31,10 @@ public class DamageClassifier {
 
     public static StyleEvent resolveKillEvent(DamageRecord record) {
         DamageSource source = record.source();
+
+        if (source.getAttacker() instanceof MobEntity) {
+            return StyleEvents.FRIENDLY_FIRE;
+        }
 
         if (source.isIn(DamageTypeTags.IS_FIRE)) {
             return StyleEvents.FRIED;

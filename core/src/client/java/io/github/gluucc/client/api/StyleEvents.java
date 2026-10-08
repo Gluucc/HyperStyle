@@ -24,6 +24,7 @@ public class StyleEvents {
     public static final StyleEvent INSTAKILL = register("instakill", "INSTAKILL", 50,0xFF00FF00);
     public static final StyleEvent FRIED = register("fried", "FRIED", 30, 0xFFFFFFFF);
     public static final StyleEvent EXPLODED = register("exploded", "EXPLODED", 50, 0xFFFFFFFF);
+    public static final StyleEvent FRIENDLY_FIRE = register("friendly_fire", "FRIENDLY FIRE", 200, 0xFFFFFFFF);
     public static final StyleEvent FIREWORKS =  register("fireworks", "FIREWORKS", 120, 0xFF00FFFF);
     public static final StyleEvent AIRSHOT = register("airshot", "AIRSHOT", 50, 0xFF00FFFF);
     public static final StyleEvent JUMPSHOT = register("jumpshot", "JUMPSHOT", 25, 0xFF00FFFF);
