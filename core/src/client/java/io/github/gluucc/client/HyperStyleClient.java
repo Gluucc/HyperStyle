@@ -58,7 +58,6 @@ public class HyperStyleClient implements ClientModInitializer {
 		ClientPlayerBlockBreakEvents.AFTER.register(((world, player, pos, state) -> {
 			if (state.isOf(Blocks.SPAWNER)) {
 				SpawnerBreakHandler.returnBirthControl();
-				HyperStyle.LOGGER.info("the spawner has been broker");
 			}
 		}));
 
