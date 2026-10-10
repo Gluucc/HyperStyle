@@ -15,6 +15,8 @@ public class ModConfig {
 
     public static ModConfig INSTANCE = new ModConfig();
     public HudMode hudMode = HudMode.DEFAULT;
+    public int hudOffsetRight = 30;
+    public int hudOffsetTop = 30;
 
     public static void load() {
         try {

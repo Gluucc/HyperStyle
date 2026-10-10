@@ -38,8 +38,8 @@ public class StyleHud {
     static final Identifier TEXTURE = HyperStyle.id("textures/gui/test3.png");
     static final Identifier LARGE_FONT = HyperStyle.id("vcr_large");
     static final Identifier SMALL_FONT = HyperStyle.id("vcr_small");
-    static final int TEXTURE_HEIGHT = 275;
-    static final int TEXTURE_WIDTH = 192;
+    public static final int TEXTURE_HEIGHT = 275;
+    public static final int TEXTURE_WIDTH = 192;
 
     static final int RANK_HEIGHT = 84;
     static final int RANK_WIDTH = 192;
@@ -134,8 +134,8 @@ public class StyleHud {
 
         customBuffer.beginWrite(true);
 
-        int meterX = scaledWidth - TEXTURE_WIDTH - 30;
-        int meterY = 30;
+        int meterX = scaledWidth - TEXTURE_WIDTH - ModConfig.INSTANCE.hudOffsetRight;
+        int meterY = ModConfig.INSTANCE.hudOffsetTop;
 
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
