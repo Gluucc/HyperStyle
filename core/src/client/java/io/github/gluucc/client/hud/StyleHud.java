@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.systems.VertexSorter;
 import io.github.gluucc.HyperStyle;
+import io.github.gluucc.client.config.ModConfig;
 import io.github.gluucc.client.style.StyleEntry;
 import io.github.gluucc.client.style.StyleMeter;
 import io.github.gluucc.client.style.StyleRank;
@@ -31,8 +32,6 @@ public class StyleHud {
         ON,
         OFF
     }
-
-    public static HudMode hudMode = HudMode.DEFAULT;
 
     private static SimpleFramebuffer customBuffer;
 
@@ -73,7 +72,7 @@ public class StyleHud {
             return;
         }
 
-        switch (hudMode) {
+        switch (ModConfig.INSTANCE.hudMode) {
             case OFF:
                 return;
             case ON:

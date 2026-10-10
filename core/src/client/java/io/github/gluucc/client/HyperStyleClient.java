@@ -1,5 +1,6 @@
 package io.github.gluucc.client;
 import io.github.gluucc.HyperStyle;
+import io.github.gluucc.client.config.ModConfig;
 import io.github.gluucc.client.hud.StyleHud;
 import io.github.gluucc.client.hud.StyleHud.HudMode;
 import io.github.gluucc.client.source.DamageHandler;
@@ -27,6 +28,7 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.lit
 public class HyperStyleClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		ModConfig.load();
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {StyleMeter.tick(); StyleHud.tick();});
 		HudRenderCallback.EVENT.register(StyleHud::render);
@@ -35,17 +37,20 @@ public class HyperStyleClient implements ClientModInitializer {
 			LiteralArgumentBuilder<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource> builder =
 					literal("hyperstylehud")
 							.then(literal("default").executes(context -> {
-								StyleHud.hudMode = HudMode.DEFAULT;
+								ModConfig.INSTANCE.hudMode = HudMode.DEFAULT;
+								ModConfig.save();
 								feedback("HUD mode set to default (hidden for UNRANKED)");
 								return 1;
 							}))
 							.then(literal("on").executes(context -> {
-								StyleHud.hudMode = HudMode.ON;
+								ModConfig.INSTANCE.hudMode = HudMode.ON;
+								ModConfig.save();
 								feedback("HUD mode set to on (always visible)");
 								return 1;
 							}))
 							.then(literal("off").executes(context -> {
-								StyleHud.hudMode = HudMode.OFF;
+								ModConfig.INSTANCE.hudMode = HudMode.OFF;
+								ModConfig.save();
 								feedback("HUD mode set to off (always hidden)");
 								return 1;
 							}));
