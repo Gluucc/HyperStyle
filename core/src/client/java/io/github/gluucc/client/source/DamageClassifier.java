@@ -1,13 +1,9 @@
 package io.github.gluucc.client.source;
 
-import io.github.gluucc.client.api.StyleCategories;
-import io.github.gluucc.client.api.StyleCategory;
-import io.github.gluucc.client.api.StyleEvent;
-import io.github.gluucc.client.api.StyleEvents;
+import io.github.gluucc.client.api.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.registry.tag.DamageTypeTags;
 

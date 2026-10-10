@@ -1,5 +1,6 @@
 package io.github.gluucc.client.source;
 
+import io.github.gluucc.client.api.DamageRecord;
 import io.github.gluucc.client.api.StyleEvent;
 import io.github.gluucc.client.style.StyleMeter;
 import net.minecraft.client.MinecraftClient;
@@ -33,6 +34,7 @@ public class DamageHandler {
                 lastPlayerHit,
                 target.getHealth(),
                 target.getMaxHealth(),
+                target.getCustomName(),
                 heightAboveGround(target)
         );
         lastDamage.put(target.getId(), record);

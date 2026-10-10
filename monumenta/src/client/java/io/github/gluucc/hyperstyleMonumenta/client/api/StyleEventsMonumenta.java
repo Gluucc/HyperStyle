@@ -20,4 +20,5 @@ public class StyleEventsMonumenta {
     public static void init() {}
 
     public static final StyleEvent DAGGER_THROW = register("dagger_throw", "DAGGER THROW", 45, 0xFFFFFFFF);
+    public static final StyleEvent BIG_KILL = register("big_kill", "BIG KILL", 150,0xFFFFFFFF);
 }

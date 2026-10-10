@@ -1,8 +1,6 @@
 package io.github.gluucc.client.source;
 
-import io.github.gluucc.client.api.StyleCategories;
-import io.github.gluucc.client.api.StyleCategory;
-import io.github.gluucc.client.api.StyleEvents;
+import io.github.gluucc.client.api.*;
 import io.github.gluucc.client.style.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
@@ -30,7 +28,7 @@ public class DeathHandler {
             recentKills.addLast(StyleMeter.getCurrentTick());
 
 
-            while(!recentKills.isEmpty() && StyleMeter.getCurrentTick() - recentKills.peekFirst() > KILLSTREAK_WINDOW) {
+            while (!recentKills.isEmpty() && StyleMeter.getCurrentTick() - recentKills.peekFirst() > KILLSTREAK_WINDOW) {
                 recentKills.pollFirst();
             }
 
@@ -46,8 +44,9 @@ public class DeathHandler {
                 StyleMeter.addStyle(StyleEvents.MULTIKILL, StyleCategories.NONE);
             }
 
-            DamageHandler.removeRecord(target.getId());
+            CoreEvents.ADD_KILL_EVENT.invoker().addKillEvent(record, category);
         }
+        DamageHandler.removeRecord(target.getId());
     }
 
     public static void reset() {
