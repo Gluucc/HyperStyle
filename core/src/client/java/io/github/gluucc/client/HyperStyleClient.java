@@ -1,7 +1,8 @@
 package io.github.gluucc.client;
-import io.github.gluucc.HyperStyle;
+import io.github.gluucc.client.api.CoreEvents;
 import io.github.gluucc.client.hud.StyleHud;
 import io.github.gluucc.client.hud.StyleHud.HudMode;
+import io.github.gluucc.client.source.DamageClassifier;
 import io.github.gluucc.client.source.DamageHandler;
 import io.github.gluucc.client.source.DeathHandler;
 import io.github.gluucc.client.api.StyleCategories;
@@ -54,6 +55,10 @@ public class HyperStyleClient implements ClientModInitializer {
 
 		StyleEvents.init();
 		StyleCategories.init();
+
+		CoreEvents.ADD_KILL_EVENT.register((record, category) -> {
+			DamageClassifier.addKill(record, category);
+		});
 
 		ClientPlayerBlockBreakEvents.AFTER.register(((world, player, pos, state) -> {
 			if (state.isOf(Blocks.SPAWNER)) {

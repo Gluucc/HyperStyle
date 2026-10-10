@@ -1,6 +1,7 @@
 package io.github.gluucc.client.source;
 
 import io.github.gluucc.client.api.*;
+import io.github.gluucc.client.style.StyleMeter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -9,6 +10,7 @@ import net.minecraft.registry.tag.DamageTypeTags;
 
 public class DamageClassifier {
     private static final double AIRBORNE_MIN_HEIGHT = 2;
+    private static final double INSTAKILL_MIN_HEALTH = 4;
 
     public static StyleCategory classify(DamageRecord record) {
         DamageSource source = record.source();
@@ -48,11 +50,7 @@ public class DamageClassifier {
             return StyleEvents.SPLATTERED;
         }
 
-        if (record.healthBefore() >= record.maxHealth() && record.maxHealth() >= 4){
-            return StyleEvents.INSTAKILL;
-        }
-
-        return StyleEvents.KILL;
+        return null;
     }
 
     public static StyleEvent resolveHitEvent(DamageRecord record) {
@@ -70,5 +68,13 @@ public class DamageClassifier {
 
         return null;
 
+    }
+
+    public static void addKill(DamageRecord record, StyleCategory category) {
+        if (record.healthBefore() >= record.maxHealth() && record.maxHealth() >= INSTAKILL_MIN_HEALTH){
+            StyleMeter.addStyle(StyleEvents.INSTAKILL, category);
+        } else {
+            StyleMeter.addStyle(StyleEvents.KILL, category);
+        }
     }
 }

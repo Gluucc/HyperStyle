@@ -23,7 +23,9 @@ public class DeathHandler {
         if (isMine) {
             StyleCategory category = DamageClassifier.classify(record);
 
-            StyleMeter.addStyle(DamageClassifier.resolveKillEvent(record), category);
+            if (DamageClassifier.resolveKillEvent(record) != null) {
+                StyleMeter.addStyle(DamageClassifier.resolveKillEvent(record), category);
+            }
 
             recentKills.addLast(StyleMeter.getCurrentTick());
 
