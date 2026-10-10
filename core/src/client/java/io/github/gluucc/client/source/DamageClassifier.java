@@ -35,6 +35,10 @@ public class DamageClassifier {
             return StyleEvents.FRIENDLY_FIRE;
         }
 
+        if (source.getAttacker() == player && record.isOnFire()) {
+            return StyleEvents.FINISHED_OFF;
+        }
+
         if (source.isIn(DamageTypeTags.IS_FIRE)) {
             return StyleEvents.FRIED;
         }

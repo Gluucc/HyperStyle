@@ -35,7 +35,8 @@ public class DamageHandler {
                 target.getHealth(),
                 target.getMaxHealth(),
                 target.getCustomName(),
-                heightAboveGround(target)
+                heightAboveGround(target),
+                target.isOnFire()
         );
         lastDamage.put(target.getId(), record);
 
