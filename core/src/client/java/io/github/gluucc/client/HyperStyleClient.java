@@ -1,5 +1,7 @@
 package io.github.gluucc.client;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.gluucc.HyperStyle;
+import io.github.gluucc.client.config.ModConfig;
 import io.github.gluucc.client.hud.StyleHud;
 import io.github.gluucc.client.hud.StyleHud.HudMode;
 import io.github.gluucc.client.source.DamageHandler;
@@ -22,33 +24,58 @@ import net.minecraft.text.Text;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class HyperStyleClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		ModConfig.load();
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {StyleMeter.tick(); StyleHud.tick();});
 		HudRenderCallback.EVENT.register(StyleHud::render);
 
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
 			LiteralArgumentBuilder<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource> builder =
-					literal("hyperstylehud")
-							.then(literal("default").executes(context -> {
-								StyleHud.hudMode = HudMode.DEFAULT;
-								feedback("HUD mode set to default (hidden for UNRANKED)");
-								return 1;
-							}))
-							.then(literal("on").executes(context -> {
-								StyleHud.hudMode = HudMode.ON;
-								feedback("HUD mode set to on (always visible)");
-								return 1;
-							}))
-							.then(literal("off").executes(context -> {
-								StyleHud.hudMode = HudMode.OFF;
-								feedback("HUD mode set to off (always hidden)");
-								return 1;
-							}));
+					literal("hyperstyle")
+							.then(literal("hud")
+								.then(literal("default").executes(context -> {
+									ModConfig.INSTANCE.hudMode = HudMode.DEFAULT;
+									ModConfig.save();
+									feedback("HUD mode set to default (hidden for UNRANKED)");
+									return 1;
+								}))
+								.then(literal("on").executes(context -> {
+									ModConfig.INSTANCE.hudMode = HudMode.ON;
+									ModConfig.save();
+									feedback("HUD mode set to on (always visible)");
+									return 1;
+								}))
+								.then(literal("off").executes(context -> {
+									ModConfig.INSTANCE.hudMode = HudMode.OFF;
+									ModConfig.save();
+									feedback("HUD mode set to off (always hidden)");
+									return 1;
+								}))
+							)
+							.then(literal("position")
+								.then(literal("topoffset")
+									.then(argument("value", IntegerArgumentType.integer()).executes(context -> {
+										int value = IntegerArgumentType.getInteger(context, "value");
+										ModConfig.INSTANCE.hudOffsetTop = value;
+										ModConfig.save();
+										return 1;
+									})
+								))
+								.then(literal("rightoffset")
+									.then(argument("value", IntegerArgumentType.integer()).executes(context -> {
+										int value = IntegerArgumentType.getInteger(context, "value");
+										ModConfig.INSTANCE.hudOffsetRight = value;
+										ModConfig.save();
+										return 1;
+									})
+								))
+							);
 			dispatcher.register(builder);
 		});
 

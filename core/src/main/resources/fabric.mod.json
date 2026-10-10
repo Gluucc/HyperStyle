@@ -3,24 +3,21 @@
 	"id": "hyperstyle",
 	"version": "${version}",
 	"name": "HyperStyle",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "HyperStyle is an ULTRAKILL-inspired style meter for Minecraft.",
 	"authors": [
-		"Me!"
+		"Gluucc"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/Gluucc/HyperStyle",
+		"sources": "https://github.com/Gluucc/HyperStyle"
 	},
-	"license": "CC0-1.0",
+	"license": "GPL-3.0",
 	"icon": "assets/hyperstyle/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": [
-			"io.github.gluucc.HyperStyle"
-		],
-		"client": [
-			"io.github.gluucc.client.HyperStyleClient"
-		]
+		"main": ["io.github.gluucc.HyperStyle"],
+		"client": ["io.github.gluucc.client.HyperStyleClient"],
+    "modmenu": ["io.github.gluucc.client.config.ModMenuIntegration"]
 	},
 	"mixins": [
 		"hyperstyle.mixins.json",
@@ -34,5 +31,9 @@
 		"minecraft": "~1.20.4",
 		"java": ">=17",
 		"fabric-api": "*"
-	}
+	},
+  "suggests": {
+    "modmenu": "*",
+    "cloth-config": "*"
+  }
 }
