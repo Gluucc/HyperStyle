@@ -29,6 +29,7 @@ public class DamageClassifier {
 
     public static StyleEvent resolveKillEvent(DamageRecord record) {
         DamageSource source = record.source();
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
 
         if (source.getAttacker() instanceof MobEntity) {
             return StyleEvents.FRIENDLY_FIRE;
@@ -50,24 +51,20 @@ public class DamageClassifier {
             return StyleEvents.SPLATTERED;
         }
 
-        return null;
-    }
-
-    public static StyleEvent resolveHitEvent(DamageRecord record) {
-        DamageSource source = record.source();
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
-
         // Temporary solution, will make a map with projectile and player state later
-        if (player != null && !source.isIndirect() && !player.isOnGround() && player.getVelocity().y < -0.6) {
+        if (player != null && source.isIndirect() && !player.isOnGround() && player.getVelocity().y < -0.6) {
             return StyleEvents.JUMPSHOT;
         }
 
-        if (record.heightAboveGround() > AIRBORNE_MIN_HEIGHT) {
+        if (source.isIndirect() && record.heightAboveGround() > AIRBORNE_MIN_HEIGHT) {
             return StyleEvents.AIRSHOT;
         }
 
         return null;
+    }
 
+    public static StyleEvent resolveHitEvent(DamageRecord record) {
+        return null;
     }
 
     public static void addKill(DamageRecord record, StyleCategory category) {

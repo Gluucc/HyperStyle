@@ -15,17 +15,18 @@ public class StyleEvents {
         return styleEvent;
     }
 
-    public static void init() {}
+    public static void init() {
+    }
 
     public static final StyleEvent KILL = register("kill", "KILL", 45, 0xFFFFFFFF);
     public static final StyleEvent DOUBLE_KILL = register("double_kill", "DOUBLE KILL", 25, 0xFFFFA500);
     public static final StyleEvent TRIPLE_KILL = register("triple_kill", "TRIPLE KILL", 50, 0xFFFFA500);
     public static final StyleEvent MULTIKILL = register("multikill", "MULTIKILL", 100, 0xFFFFA500);
-    public static final StyleEvent INSTAKILL = register("instakill", "INSTAKILL", 50,0xFF00FF00);
+    public static final StyleEvent INSTAKILL = register("instakill", "INSTAKILL", 50, 0xFF00FF00);
     public static final StyleEvent FRIED = register("fried", "FRIED", 30, 0xFFFFFFFF);
     public static final StyleEvent EXPLODED = register("exploded", "EXPLODED", 50, 0xFFFFFFFF);
     public static final StyleEvent FRIENDLY_FIRE = register("friendly_fire", "FRIENDLY FIRE", 200, 0xFFFFFFFF);
-    public static final StyleEvent FIREWORKS =  register("fireworks", "FIREWORKS", 120, 0xFF00FFFF);
+    public static final StyleEvent FIREWORKS = register("fireworks", "FIREWORKS", 120, 0xFF00FFFF);
     public static final StyleEvent AIRSHOT = register("airshot", "AIRSHOT", 50, 0xFF00FFFF);
     public static final StyleEvent JUMPSHOT = register("jumpshot", "JUMPSHOT", 25, 0xFF00FFFF);
     public static final StyleEvent SPLATTERED = register("splattered", "SPLATTERED", 100, 0xFFFFFFFF);
