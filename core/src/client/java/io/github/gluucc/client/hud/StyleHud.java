@@ -231,8 +231,6 @@ public class StyleHud {
 
         MutableText multiplierMultiplierText = Text.empty().fillStyle(customFontDefault);
 
-        MatrixStack matrices = context.getMatrices();
-        matrices.push();
 
         if (steppedMultiplier >= 2.00f) {
             multiplierMultiplierText = Text.empty().fillStyle(customFontLarge).withColor(0xFFFF8C00);
@@ -251,9 +249,6 @@ public class StyleHud {
 
         context.drawText(renderer, multiplierText, meterX, meterY + TEXTURE_HEIGHT - DEFAULT_FONT_HEIGHT - SMALL_FONT_HEIGHT - offsetBottom + DEFAULT_FONT_HEIGHT - MEDIUM_FONT_HEIGHT, 0xFFFFFFFF, false);
         context.drawText(renderer, multiplierMultiplierText, meterX + TEXTURE_WIDTH - multiplierMultiplierTextWidth, meterY + TEXTURE_HEIGHT - currentMultiplierFontHeight - SMALL_FONT_HEIGHT - offsetBottom, 0xFFFFFFFF, false);
-
-        matrices.pop();
-
 
         matrices.pop();
 
