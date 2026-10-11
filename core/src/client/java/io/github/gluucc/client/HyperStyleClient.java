@@ -4,8 +4,10 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.gluucc.HyperStyle;
 import io.github.gluucc.client.config.ModConfig;
+import io.github.gluucc.client.api.CoreEvents;
 import io.github.gluucc.client.hud.StyleHud;
 import io.github.gluucc.client.hud.StyleHud.HudMode;
+import io.github.gluucc.client.source.DamageClassifier;
 import io.github.gluucc.client.source.DamageHandler;
 import io.github.gluucc.client.source.DeathHandler;
 import io.github.gluucc.client.api.StyleCategories;
@@ -93,10 +95,13 @@ public class HyperStyleClient implements ClientModInitializer {
 		StyleEvents.init();
 		StyleCategories.init();
 
+		CoreEvents.ADD_KILL_EVENT.register((record, category) -> {
+			DamageClassifier.addKill(record, category);
+		});
+
 		ClientPlayerBlockBreakEvents.AFTER.register(((world, player, pos, state) -> {
 			if (state.isOf(Blocks.SPAWNER)) {
 				SpawnerBreakHandler.returnBirthControl();
-				HyperStyle.LOGGER.info("the spawner has been broker");
 			}
 		}));
 
