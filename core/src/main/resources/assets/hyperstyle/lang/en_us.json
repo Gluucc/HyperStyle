@@ -10,5 +10,9 @@
   "option.hyperstyle.hud_scale": "HUD scale",
   "option.hyperstyle.hud_scale.tooltip": "Size of the style meter. 100% is the default size.",
   "option.hyperstyle.hud_rotation": "HUD tilt",
-  "option.hyperstyle.hud_rotation.tooltip": "Rotation of the style meter in depth, in degrees. ~0° is flat."
+  "option.hyperstyle.hud_rotation.tooltip": "Rotation of the style meter in depth, in degrees. ~0° is flat.",
+  "option.hyperstyle.hud_sway_intensity": "HUD sway intensity",
+  "option.hyperstyle.hud_sway_intensity.tooltip": "How hard the HUD should sway (set to zero to disable).",
+  "option.hyperstyle.hud_sway_catchup_delay": "HUD sway catch-up delay",
+  "option.hyperstyle.hud_sway_catchup_delay.tooltip": "How long the HUD takes to follow your movement (time to cover half the distance)."
 }

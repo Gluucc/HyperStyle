@@ -19,8 +19,8 @@ public class ClothScreen {
         ConfigEntryBuilder eb = builder.entryBuilder();
 
         general.addEntry(eb.startEnumSelector(
-                Text.translatable("option.hyperstyle.hud_mode"),
-                HudMode.class, ModConfig.INSTANCE.hudMode).setDefaultValue(HudMode.DEFAULT)
+                        Text.translatable("option.hyperstyle.hud_mode"),
+                        HudMode.class, ModConfig.INSTANCE.hudMode).setDefaultValue(HudMode.DEFAULT)
                 .setTooltip(Text.translatable("option.hyperstyle.hud_mode.tooltip"))
                 .setSaveConsumer(v -> ModConfig.INSTANCE.hudMode = v)
                 .build());
@@ -31,8 +31,8 @@ public class ClothScreen {
         int maxTop = Math.max(0, screenH - StyleHud.TEXTURE_HEIGHT);
 
         general.addEntry(eb.startIntSlider(
-                Text.translatable("option.hyperstyle.hud_offset_right"),
-                Math.min(ModConfig.INSTANCE.hudOffsetRight, maxRight), 0, maxRight)
+                        Text.translatable("option.hyperstyle.hud_offset_right"),
+                        Math.min(ModConfig.INSTANCE.hudOffsetRight, maxRight), 0, maxRight)
                 .setDefaultValue(30)
                 .setTooltip(Text.translatable("option.hyperstyle.hud_offset_right.tooltip"))
                 .setSaveConsumer(v -> ModConfig.INSTANCE.hudOffsetRight = v)
@@ -47,8 +47,8 @@ public class ClothScreen {
                 .build());
 
         general.addEntry(eb.startIntSlider(
-                Text.translatable("option.hyperstyle.hud_scale"),
-                Math.round(ModConfig.INSTANCE.hudScale * 100), 50, 200)
+                        Text.translatable("option.hyperstyle.hud_scale"),
+                        Math.round(ModConfig.INSTANCE.hudScale * 100), 50, 200)
                 .setDefaultValue(100)
                 .setTooltip(Text.translatable("option.hyperstyle.hud_scale.tooltip"))
                 .setTextGetter(v -> Text.literal(v + "%"))
@@ -62,6 +62,24 @@ public class ClothScreen {
                 .setTooltip(Text.translatable("option.hyperstyle.hud_rotation.tooltip"))
                 .setTextGetter(v -> Text.literal(v + "°"))
                 .setSaveConsumer(v -> ModConfig.INSTANCE.hudRotation = v)
+                .build());
+
+        general.addEntry(eb.startIntSlider(
+                        Text.translatable("option.hyperstyle.hud_sway_intensity"),
+                        Math.round(ModConfig.INSTANCE.hudSwayIntensity * 100), 0, 100)
+                .setDefaultValue(50)
+                .setTooltip(Text.translatable("option.hyperstyle.hud_sway_intensity.tooltip"))
+                .setTextGetter(v -> Text.literal(v + "%"))
+                .setSaveConsumer(v -> ModConfig.INSTANCE.hudSwayIntensity = v / 100f)
+                .build());
+
+        general.addEntry(eb.startIntSlider(
+                        Text.translatable("option.hyperstyle.hud_sway_catchup_delay"),
+                        Math.round(ModConfig.INSTANCE.hudSwayCatchupDelay * 100), 20, 100)
+                .setDefaultValue(50)
+                .setTooltip(Text.translatable("option.hyperstyle.hud_sway_catchup_delay.tooltip"))
+                .setTextGetter(v -> Text.literal(2 * v + " ms"))
+                .setSaveConsumer(v -> ModConfig.INSTANCE.hudSwayCatchupDelay = v / 100f)
                 .build());
 
         return builder.build();

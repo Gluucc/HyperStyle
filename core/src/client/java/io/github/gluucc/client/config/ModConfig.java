@@ -22,6 +22,9 @@ public class ModConfig {
     public float hudScale = 1.0f;
     public float hudRotation = -55f;
 
+    public float hudSwayIntensity = 0.5f;
+    public float hudSwayCatchupDelay = 0.5f;
+
     public static void load() {
         try {
             if(Files.exists(PATH)) {

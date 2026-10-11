@@ -276,6 +276,7 @@ public class StyleHud {
         float ndcY = -2f * (meterY - 30) / scaledHeight;
         perspectiveMatrix.m20(perspectiveMatrix.m20() - ndcX);
         perspectiveMatrix.m21(perspectiveMatrix.m21() - ndcY);
+        HudRenderUtil.applyHudSway(perspectiveMatrix);
 
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         RenderSystem.setProjectionMatrix(perspectiveMatrix, VertexSorter.BY_Z);
