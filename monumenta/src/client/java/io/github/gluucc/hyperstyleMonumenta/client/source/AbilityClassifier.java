@@ -11,11 +11,6 @@ import net.minecraft.text.Text;
 
 public class AbilityClassifier {
     public static StyleEvent resolveCastEvent(AbilityUpdatePacketAccessor ability) {
-
-        if (ability.getName().equals("Dagger Throw")) {
-            return StyleEventsMonumenta.DAGGER_THROW;
-        }
-
         return null;
     }
 
