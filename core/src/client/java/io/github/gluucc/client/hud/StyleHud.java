@@ -194,7 +194,7 @@ public class StyleHud {
 
         for (StyleEntry entry : styleList) {
             MutableText entryText = Text.empty().fillStyle(customFontDefault);
-            entryText.append(Text.literal("+  ").formatted(Formatting.WHITE));
+            entryText.append(Text.literal("+ ").formatted(Formatting.WHITE));
             entryText.append(Text.literal(entry.event().label()));
             if (entry.count() > 1) {
                 entryText.append(Text.literal(" x" + entry.count()).formatted(Formatting.WHITE));
