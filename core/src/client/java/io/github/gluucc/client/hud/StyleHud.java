@@ -217,6 +217,12 @@ public class StyleHud {
         Matrix4f projection = new Matrix4f();
         float fov = (float) Math.toRadians(40);
         Matrix4f perspectiveMatrix = projection.perspective(fov, (float) pixelWidth / pixelHeight, 0.1f, 1000);
+
+        float ndcX = 2f * (30 - ModConfig.INSTANCE.hudOffsetRight) / scaledWidth;
+        float ndcY = -2f * (meterY - 30) / scaledHeight;
+        perspectiveMatrix.m20(perspectiveMatrix.m20() - ndcX);
+        perspectiveMatrix.m21(perspectiveMatrix.m21() - ndcY);
+
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         RenderSystem.setProjectionMatrix(perspectiveMatrix, VertexSorter.BY_Z);
         matrices.push();
@@ -234,10 +240,12 @@ public class StyleHud {
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;
 
+        float refRightEdge = scaledWidth - 30f;
+        float refCenterY = 30f + TEXTURE_HEIGHT * hudScale / 2f;
 
         matrixStack.loadIdentity();
         float z = scaledHeight / (2 * (float) Math.tan(fov / 2));
-        matrices.translate(rightEdge - ((double) scaledWidth / 2), ((double) scaledHeight / 2) - centerY, -z);
+        matrices.translate(refRightEdge - ((double) scaledWidth / 2), ((double) scaledHeight / 2) - refCenterY, -z);
 
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-55.0f));
 
