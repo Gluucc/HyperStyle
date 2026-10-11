@@ -18,9 +18,15 @@
 	"icon": "assets/hyperstyle/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"main": ["io.github.gluucc.HyperStyle"],
-		"client": ["io.github.gluucc.client.HyperStyleClient"],
-    "modmenu": ["io.github.gluucc.client.config.ModMenuIntegration"]
+		"main": [
+			"io.github.gluucc.hyperstyle.HyperStyle"
+		],
+		"client": [
+			"io.github.gluucc.hyperstyle.client.HyperStyleClient"
+		],
+    "modmenu": [
+	    "io.github.gluucc.hyperstyle.client.config.ModMenuIntegration"
+    ]
 	},
 	"mixins": [
 		"hyperstyle.mixins.json",

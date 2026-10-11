@@ -16,8 +16,12 @@
   "icon": "assets/hyperstyle-monumenta/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": ["io.github.gluucc.hyperstyleMonumenta.client.HyperstyleMonumentaClient"],
-    "main": ["io.github.gluucc.hyperstyleMonumenta.HyperstyleMonumenta"]
+    "client": [
+      "io.github.gluucc.hyperstyle.monumenta.client.HyperstyleMonumentaClient"
+    ],
+    "main": [
+      "io.github.gluucc.hyperstyle.monumenta.HyperstyleMonumenta"
+    ]
   },
   "mixins": [
     "hyperstyle-monumenta.mixins.json"
