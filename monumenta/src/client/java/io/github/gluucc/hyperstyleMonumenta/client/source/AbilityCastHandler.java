@@ -17,7 +17,7 @@ public class AbilityCastHandler {
         for (AbilityHandler.AbilityInfo prevAbility : abilityData) {
             if (ability.getName().equals(prevAbility.name)) {
                 if (ability.getRemainingCharges() < prevAbility.charges || prevAbility.remainingCooldown == 0 && ability.getRemainingCooldown() != 0)  {
-                    HyperstyleMonumenta.LOGGER.info(ability.getName() + " WAS USED." + " REM COOLDOWN: " + ability.getRemainingCooldown() + " | REM CHARGES: " + ability.getRemainingCharges() + " | REM DURATION: " + ability.getRemainingDuration() + " | INIT DURATION: " + ability.getInitialDuration());
+                    //HyperstyleMonumenta.LOGGER.info(ability.getName() + " WAS USED." + " REM COOLDOWN: " + ability.getRemainingCooldown() + " | REM CHARGES: " + ability.getRemainingCharges() + " | REM DURATION: " + ability.getRemainingDuration() + " | INIT DURATION: " + ability.getInitialDuration());
 
                     StyleEvent cast = AbilityClassifier.resolveCastEvent(ability);
                     if (cast != null) {
