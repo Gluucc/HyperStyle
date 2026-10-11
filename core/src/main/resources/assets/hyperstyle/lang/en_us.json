@@ -1,0 +1,14 @@
+{
+  "title.hyperstyle.config": "HyperStyle",
+  "category.hyperstyle.general": "General",
+  "option.hyperstyle.hud_mode": "HUD mode",
+  "option.hyperstyle.hud_mode.tooltip": "DEFAULT means hide when unranked, show otherwise",
+  "option.hyperstyle.hud_offset_right": "Distance from right edge",
+  "option.hyperstyle.hud_offset_right.tooltip": "How far the HUD is from the right edge of the screen. Higher value moves it to the left.",
+  "option.hyperstyle.hud_offset_top": "Distance from top edge",
+  "option.hyperstyle.hud_offset_top.tooltip": "How far the HUD is from the top edge of the screen. Higher value moves it down.",
+  "option.hyperstyle.hud_scale": "HUD scale",
+  "option.hyperstyle.hud_scale.tooltip": "Size of the style meter. 100% is the default size.",
+  "option.hyperstyle.hud_rotation": "HUD tilt",
+  "option.hyperstyle.hud_rotation.tooltip": "Rotation of the style meter in depth, in degrees. ~0° is flat."
+}

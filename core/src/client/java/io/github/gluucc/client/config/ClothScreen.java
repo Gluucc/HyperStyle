@@ -50,6 +50,7 @@ public class ClothScreen {
                 Text.translatable("option.hyperstyle.hud_scale"),
                 Math.round(ModConfig.INSTANCE.hudScale * 100), 50, 200)
                 .setDefaultValue(100)
+                .setTooltip(Text.translatable("option.hyperstyle.hud_scale.tooltip"))
                 .setTextGetter(v -> Text.literal(v + "%"))
                 .setSaveConsumer(v -> ModConfig.INSTANCE.hudScale = v / 100f)
                 .build());
@@ -58,6 +59,7 @@ public class ClothScreen {
                         Text.translatable("option.hyperstyle.hud_rotation"),
                         Math.round(ModConfig.INSTANCE.hudRotation), -130, 50)
                 .setDefaultValue(-55)
+                .setTooltip(Text.translatable("option.hyperstyle.hud_rotation.tooltip"))
                 .setTextGetter(v -> Text.literal(v + "°"))
                 .setSaveConsumer(v -> ModConfig.INSTANCE.hudRotation = v)
                 .build());
