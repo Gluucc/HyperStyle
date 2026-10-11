@@ -9,6 +9,7 @@ import io.github.gluucc.client.config.ModConfig;
 import io.github.gluucc.client.style.StyleEntry;
 import io.github.gluucc.client.style.StyleMeter;
 import io.github.gluucc.client.style.StyleRank;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.SimpleFramebuffer;
@@ -21,6 +22,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 
@@ -36,8 +38,17 @@ public class StyleHud {
     private static SimpleFramebuffer customBuffer;
 
     static final Identifier TEXTURE = HyperStyle.id("textures/gui/test3.png");
+    static final Identifier DEFAULT_FONT = HyperStyle.id("vcr_default");
+    static final Identifier MEDIUM_FONT = HyperStyle.id("vcr_medium");
     static final Identifier LARGE_FONT = HyperStyle.id("vcr_large");
+    static final Identifier MASSIVE_FONT = HyperStyle.id("vcr_massive");
     static final Identifier SMALL_FONT = HyperStyle.id("vcr_small");
+
+    static final int DEFAULT_FONT_HEIGHT = 14;
+    static final int MEDIUM_FONT_HEIGHT = 10;
+    static final int LARGE_FONT_HEIGHT = 17;
+    static final int MASSIVE_FONT_HEIGHT = 20;
+    static final int SMALL_FONT_HEIGHT = 8;
     public static final int TEXTURE_HEIGHT = 275;
     public static final int TEXTURE_WIDTH = 192;
 
@@ -177,12 +188,12 @@ public class StyleHud {
         }
 
         offsetY += 20;
-        Style customFontLarge = Style.EMPTY.withFont(LARGE_FONT);
+        Style customFontDefault = Style.EMPTY.withFont(DEFAULT_FONT);
 
         int largeLineSpacing = 22;
 
         for (StyleEntry entry : styleList) {
-            MutableText entryText = Text.empty().fillStyle(customFontLarge);
+            MutableText entryText = Text.empty().fillStyle(customFontDefault);
             entryText.append(Text.literal("+  ").formatted(Formatting.WHITE));
             entryText.append(Text.literal(entry.event().label()));
             if (entry.count() > 1) {
@@ -193,13 +204,56 @@ public class StyleHud {
             offsetY += largeLineSpacing;
         }
 
+        int offsetBottom = 5;
+
         Style customFontSmall = Style.EMPTY.withFont(SMALL_FONT);
 
         String freshnessStr = "FRESHNESS: " + String.format("%.2f", StyleMeter.getFreshness());
         MutableText freshnessText = Text.literal(freshnessStr).setStyle(customFontSmall);
 
         int freshnessTextWidth = renderer.getWidth(freshnessText.asOrderedText());
-        context.drawText(renderer, freshnessText, meterX + (TEXTURE_WIDTH - freshnessTextWidth) / 2, meterY + TEXTURE_HEIGHT - renderer.fontHeight, 0xFFFFFFFF, false);
+        context.drawText(renderer, freshnessText, meterX + (TEXTURE_WIDTH - freshnessTextWidth) / 2, meterY + TEXTURE_HEIGHT - SMALL_FONT_HEIGHT - offsetBottom, 0xFFFFFFFF, false);
+
+        offsetBottom += 10;
+
+        Style customFontMedium = Style.EMPTY.withFont(MEDIUM_FONT);
+        Style customFontLarge = Style.EMPTY.withFont(LARGE_FONT);
+        Style customFontMassive = Style.EMPTY.withFont(MASSIVE_FONT);
+
+        MutableText multiplierText = Text.empty().fillStyle(customFontMedium);
+        multiplierText.append(Text.literal("MULTIPLIER").setStyle(customFontMedium));
+
+        float smoothMultiplier = MathHelper.lerp(tickDelta, StyleMeter.getPrevMultiplier(), StyleMeter.getCurrentMultiplier());
+        float steppedMultiplier = Math.round(smoothMultiplier * 100.0f) / 100.0f;
+        String multiplierToDisplay = String.format(java.util.Locale.US, "%.2f", steppedMultiplier);
+
+        int currentMultiplierFontHeight = DEFAULT_FONT_HEIGHT;
+
+        MutableText multiplierMultiplierText = Text.empty().fillStyle(customFontDefault);
+
+        MatrixStack matrices = context.getMatrices();
+        matrices.push();
+
+        if (steppedMultiplier >= 2.00f) {
+            multiplierMultiplierText = Text.empty().fillStyle(customFontLarge).withColor(0xFFFF8C00);
+            currentMultiplierFontHeight = LARGE_FONT_HEIGHT;
+            HudRenderUtil.applyHudShakeRand(matrices, 2.0f);
+        }
+
+        if (steppedMultiplier >= 3.00f) {
+            multiplierMultiplierText = Text.empty().fillStyle(customFontMassive).withColor(0xFFFF0000);
+            currentMultiplierFontHeight = MASSIVE_FONT_HEIGHT;
+            HudRenderUtil.applyHudShakeRand(matrices, 3.0f);
+        }
+        multiplierMultiplierText.append(Text.literal("x" + multiplierToDisplay));
+
+        int multiplierMultiplierTextWidth = renderer.getWidth(multiplierMultiplierText.asOrderedText());
+
+        context.drawText(renderer, multiplierText, meterX, meterY + TEXTURE_HEIGHT - DEFAULT_FONT_HEIGHT - SMALL_FONT_HEIGHT - offsetBottom + DEFAULT_FONT_HEIGHT - MEDIUM_FONT_HEIGHT, 0xFFFFFFFF, false);
+        context.drawText(renderer, multiplierMultiplierText, meterX + TEXTURE_WIDTH - multiplierMultiplierTextWidth, meterY + TEXTURE_HEIGHT - currentMultiplierFontHeight - SMALL_FONT_HEIGHT - offsetBottom, 0xFFFFFFFF, false);
+
+        matrices.pop();
+
 
         matrices.pop();
 

@@ -4,6 +4,8 @@ import io.github.gluucc.client.api.StyleCategories;
 import io.github.gluucc.client.api.StyleCategory;
 import io.github.gluucc.client.api.StyleCategoryRegistry;
 import io.github.gluucc.client.api.StyleEvent;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -24,12 +26,30 @@ public class StyleMeter {
     private static double freshness = 1;
     private static final double MAX_FRESHNESS_BONUS = 0.75;
     private static double peakPoints = 0;
+    private static float prevMultiplier = 1.00f;
+    private static float currentMultiplier = 1.00f;
 
     public static void tick() {
         currentTick++;
 
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+
+        if (player != null) {
+            prevMultiplier = currentMultiplier;
+
+            if (!player.isOnGround() && !player.isInFluid()) {
+                currentMultiplier += 0.10f;
+            }
+
+            if (player.isOnGround()) {
+                currentMultiplier -= 0.30f;
+            }
+
+            currentMultiplier = Math.max(1.00f, Math.min(currentMultiplier, 3.00f));
+        }
+
         QueuedEvent pending = styleQueue.pollFirst();
-        if(pending != null) {
+        if (pending != null) {
             StyleEntry top = styleList.peekFirst();
             if (top != null && top.event() == pending.event()) {
                 styleList.pollFirst();
@@ -50,8 +70,6 @@ public class StyleMeter {
                 }
             }
 
-
-
             int categoryCount = StyleCategoryRegistry.values().size() - 1;
             int count = countDistinctCategories();
             if (count == 0) {
@@ -60,7 +78,7 @@ public class StyleMeter {
                 freshness = 1 + (count - 1) / (categoryCount - 1.0) * MAX_FRESHNESS_BONUS;
             }
 
-            stylePoints += pending.event().points() * freshness;
+            stylePoints += pending.event().points() * freshness * currentMultiplier;
         }
 
         if (stylePoints > 0) {
@@ -77,11 +95,11 @@ public class StyleMeter {
             }
         }
 
-        while(!styleList.isEmpty() && currentTick - styleList.getLast().createdAt() >= MAX_STYLE_LIST_AGE) {
+        while (!styleList.isEmpty() && currentTick - styleList.getLast().createdAt() >= MAX_STYLE_LIST_AGE) {
             styleList.removeLast();
         }
 
-        while(!freshnessWindow.isEmpty() && currentTick - freshnessWindow.getLast().createdAt() >= MAX_FRESHNESS_LIST_AGE) {
+        while (!freshnessWindow.isEmpty() && currentTick - freshnessWindow.getLast().createdAt() >= MAX_FRESHNESS_LIST_AGE) {
             freshnessWindow.removeLast();
         }
     }
@@ -126,7 +144,7 @@ public class StyleMeter {
             peakPoints = Math.max(peakPoints, stylePoints);
 
             double range = peakPoints - currentRank.getReqPoints();
-            if(range <= 0) {
+            if (range <= 0) {
                 percent = 100.0;
             } else {
                 percent = (stylePoints - currentRank.getReqPoints()) / range * 100;
@@ -148,6 +166,14 @@ public class StyleMeter {
             distinct.add(entry.category());
         }
         return distinct.size();
+    }
+
+    public static float getCurrentMultiplier() {
+        return currentMultiplier;
+    }
+
+    public static float getPrevMultiplier() {
+        return prevMultiplier;
     }
 
     public static void reset() {
