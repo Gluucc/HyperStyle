@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.systems.VertexSorter;
 import io.github.gluucc.HyperStyle;
+import io.github.gluucc.client.config.ModConfig;
 import io.github.gluucc.client.style.StyleEntry;
 import io.github.gluucc.client.style.StyleMeter;
 import io.github.gluucc.client.style.StyleRank;
@@ -34,8 +35,6 @@ public class StyleHud {
         OFF
     }
 
-    public static HudMode hudMode = HudMode.DEFAULT;
-
     private static SimpleFramebuffer customBuffer;
 
     static final Identifier TEXTURE = HyperStyle.id("textures/gui/test3.png");
@@ -44,13 +43,14 @@ public class StyleHud {
     static final Identifier LARGE_FONT = HyperStyle.id("vcr_large");
     static final Identifier MASSIVE_FONT = HyperStyle.id("vcr_massive");
     static final Identifier SMALL_FONT = HyperStyle.id("vcr_small");
+
     static final int DEFAULT_FONT_HEIGHT = 14;
     static final int MEDIUM_FONT_HEIGHT = 10;
     static final int LARGE_FONT_HEIGHT = 17;
     static final int MASSIVE_FONT_HEIGHT = 20;
     static final int SMALL_FONT_HEIGHT = 8;
-    static final int TEXTURE_HEIGHT = 275;
-    static final int TEXTURE_WIDTH = 192;
+    public static final int TEXTURE_HEIGHT = 275;
+    public static final int TEXTURE_WIDTH = 192;
 
     static final int RANK_HEIGHT = 84;
     static final int RANK_WIDTH = 192;
@@ -83,7 +83,7 @@ public class StyleHud {
             return;
         }
 
-        switch (hudMode) {
+        switch (ModConfig.INSTANCE.hudMode) {
             case OFF:
                 return;
             case ON:
@@ -95,6 +95,8 @@ public class StyleHud {
                 }
                 break;
         }
+
+
 
 
         float rankScale = 1.0f;
@@ -145,11 +147,21 @@ public class StyleHud {
 
         customBuffer.beginWrite(true);
 
-        int meterX = scaledWidth - TEXTURE_WIDTH - 30;
-        int meterY = 30;
+        int meterX = scaledWidth - TEXTURE_WIDTH - ModConfig.INSTANCE.hudOffsetRight;
+        int meterY = ModConfig.INSTANCE.hudOffsetTop;
+
+        float hudScale = ModConfig.INSTANCE.hudScale;
+        float rightEdge = meterX + TEXTURE_WIDTH;
+        MatrixStack matrices = context.getMatrices();
+
 
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+
+        matrices.push();
+        matrices.translate(rightEdge, meterY, 0);
+        matrices.scale(hudScale, hudScale, 1f);
+        matrices.translate(-rightEdge, -meterY, 0);
 
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         int lineSpacing = renderer.fontHeight + 3;
@@ -219,8 +231,6 @@ public class StyleHud {
 
         MutableText multiplierMultiplierText = Text.empty().fillStyle(customFontDefault);
 
-        MatrixStack matrices = context.getMatrices();
-        matrices.push();
 
         if (steppedMultiplier >= 2.00f) {
             multiplierMultiplierText = Text.empty().fillStyle(customFontLarge).withColor(0xFFFF8C00);
@@ -242,7 +252,6 @@ public class StyleHud {
 
         matrices.pop();
 
-
         customBuffer.endWrite();
         mainBuffer.beginWrite(true);
 
@@ -257,30 +266,37 @@ public class StyleHud {
         Matrix4f projection = new Matrix4f();
         float fov = (float) Math.toRadians(40);
         Matrix4f perspectiveMatrix = projection.perspective(fov, (float) pixelWidth / pixelHeight, 0.1f, 1000);
+
+        float ndcX = 2f * (30 - ModConfig.INSTANCE.hudOffsetRight) / scaledWidth;
+        float ndcY = -2f * (meterY - 30) / scaledHeight;
+        perspectiveMatrix.m20(perspectiveMatrix.m20() - ndcX);
+        perspectiveMatrix.m21(perspectiveMatrix.m21() - ndcY);
+
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         RenderSystem.setProjectionMatrix(perspectiveMatrix, VertexSorter.BY_Z);
         matrices.push();
         matrixStack.push();
 
         // upper left and lower left
-        float x1 = meterX - (float) RANK_SCALE_MAX_WIDTH_DIFF;
+        float x1 = rightEdge - (TEXTURE_WIDTH + (float) RANK_SCALE_MAX_WIDTH_DIFF) * hudScale;
         // lower right and upper right
-        float x2 = meterX + TEXTURE_WIDTH + (float) RANK_SCALE_MAX_WIDTH_DIFF;
+        float x2 = rightEdge + (float) RANK_SCALE_MAX_WIDTH_DIFF * hudScale;
         // upper left and upper right
-        float y1 = meterY - (float) RANK_SCALE_MAX_HEIGHT_DIFF;
+        float y1 = meterY - (float) RANK_SCALE_MAX_HEIGHT_DIFF * hudScale;
         // lower left and lower right
-        float y2 = meterY + TEXTURE_HEIGHT + (float) RANK_SCALE_MAX_HEIGHT_DIFF;
+        float y2 = meterY + (TEXTURE_HEIGHT + (float) RANK_SCALE_MAX_HEIGHT_DIFF) * hudScale;
 
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;
 
-        float rightEdge = meterX + TEXTURE_WIDTH;
+        float refRightEdge = scaledWidth - 30f;
+        float refCenterY = 30f + TEXTURE_HEIGHT * hudScale / 2f;
 
         matrixStack.loadIdentity();
         float z = scaledHeight / (2 * (float) Math.tan(fov / 2));
-        matrices.translate(rightEdge - ((double) scaledWidth / 2), ((double) scaledHeight / 2) - centerY, -z);
+        matrices.translate(refRightEdge - ((double) scaledWidth / 2), ((double) scaledHeight / 2) - refCenterY, -z);
 
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-55.0f));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ModConfig.INSTANCE.hudRotation));
 
         matrices.translate(centerX - rightEdge, 0, 0);
 
