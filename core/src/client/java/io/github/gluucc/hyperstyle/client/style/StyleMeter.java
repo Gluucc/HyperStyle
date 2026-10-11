@@ -9,8 +9,8 @@ import net.minecraft.client.network.ClientPlayerEntity;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Collections;
+import java.util.HashSet;
 
 public class StyleMeter {
     private static double stylePoints;

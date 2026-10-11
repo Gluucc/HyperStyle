@@ -1,8 +1,10 @@
 package io.github.gluucc.hyperstyle.client.source;
 
-import io.github.gluucc.hyperstyle.client.api.*;
-import io.github.gluucc.hyperstyle.client.style.*;
-import io.github.gluucc.hyperstyle.client.api.*;
+import io.github.gluucc.hyperstyle.client.api.CoreEvents;
+import io.github.gluucc.hyperstyle.client.api.DamageRecord;
+import io.github.gluucc.hyperstyle.client.api.StyleCategories;
+import io.github.gluucc.hyperstyle.client.api.StyleCategory;
+import io.github.gluucc.hyperstyle.client.api.StyleEvents;
 import io.github.gluucc.hyperstyle.client.style.StyleMeter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;

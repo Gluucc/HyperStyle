@@ -1,6 +1,5 @@
 package io.github.gluucc.hyperstyle.client.source;
 
-import io.github.gluucc.hyperstyle.client.api.*;
 import io.github.gluucc.hyperstyle.client.api.DamageRecord;
 import io.github.gluucc.hyperstyle.client.api.StyleEvent;
 import io.github.gluucc.hyperstyle.client.style.StyleMeter;

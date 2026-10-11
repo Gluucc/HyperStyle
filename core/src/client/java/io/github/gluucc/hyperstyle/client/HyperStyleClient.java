@@ -1,18 +1,19 @@
 package io.github.gluucc.hyperstyle.client;
+
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import io.github.gluucc.hyperstyle.client.config.ModConfig;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.gluucc.hyperstyle.client.api.CoreEvents;
+import io.github.gluucc.hyperstyle.client.api.StyleCategories;
+import io.github.gluucc.hyperstyle.client.api.StyleEvents;
+import io.github.gluucc.hyperstyle.client.config.ModConfig;
 import io.github.gluucc.hyperstyle.client.hud.StyleHud;
 import io.github.gluucc.hyperstyle.client.hud.StyleHud.HudMode;
 import io.github.gluucc.hyperstyle.client.source.DamageClassifier;
 import io.github.gluucc.hyperstyle.client.source.DamageHandler;
 import io.github.gluucc.hyperstyle.client.source.DeathHandler;
-import io.github.gluucc.hyperstyle.client.api.StyleCategories;
-import io.github.gluucc.hyperstyle.client.api.StyleEvents;
 import io.github.gluucc.hyperstyle.client.source.SpawnerBreakHandler;
 import io.github.gluucc.hyperstyle.client.style.StyleMeter;
-
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -23,8 +24,6 @@ import net.fabricmc.fabric.api.event.client.player.ClientPlayerBlockBreakEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
-
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
