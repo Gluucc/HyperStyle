@@ -28,9 +28,15 @@ public class StyleMeter {
     private static double peakPoints = 0;
     private static float prevMultiplier = 1.00f;
     private static float currentMultiplier = 1.00f;
+    private static int rankShakeTicks = 0;
+    private static final int MAX_RANK_SHAKE_TICKS = 20;
 
     public static void tick() {
         currentTick++;
+
+        if (rankShakeTicks > 0) {
+            rankShakeTicks--;
+        }
 
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
 
@@ -119,6 +125,16 @@ public class StyleMeter {
             stylePoints -= actualPenalty;
             if (stylePoints < 0) stylePoints = 0;
         }
+
+        rankShakeTicks = MAX_RANK_SHAKE_TICKS;
+    }
+
+    public static int getRankShakeTicks() {
+        return rankShakeTicks;
+    }
+
+    public static int getMaxRankShakeTicks() {
+        return MAX_RANK_SHAKE_TICKS;
     }
 
     public static StyleRank getCurrentRank() {

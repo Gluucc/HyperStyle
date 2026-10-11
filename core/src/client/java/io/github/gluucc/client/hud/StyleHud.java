@@ -96,9 +96,6 @@ public class StyleHud {
                 break;
         }
 
-
-
-
         float rankScale = 1.0f;
         if (animationStartTick != -1L) {
             long currentTick = StyleMeter.getCurrentTick();
@@ -154,7 +151,6 @@ public class StyleHud {
         float rightEdge = meterX + TEXTURE_WIDTH;
         MatrixStack matrices = context.getMatrices();
 
-
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -173,7 +169,17 @@ public class StyleHud {
         int rankX = meterX + (TEXTURE_WIDTH - currentRankWidth) / 2;
         int rankY = meterY + (RANK_HEIGHT - currentRankHeight) / 2;
 
+        MatrixStack rankMatrices = context.getMatrices();
+        rankMatrices.push();
+
+        if (StyleMeter.getRankShakeTicks() > 0) {
+            HudRenderUtil.applyHudShakeSin(rankMatrices, tickDelta, 10.0f);
+        }
+
         context.drawTexture(currentRank.getTexture(), rankX, rankY, 0, 0, currentRankWidth, currentRankHeight, currentRankWidth, currentRankHeight);
+
+        rankMatrices.pop();
+
         offsetY += lineSpacing;
 
         RenderSystem.disableBlend();
@@ -230,7 +236,6 @@ public class StyleHud {
         int currentMultiplierFontHeight = DEFAULT_FONT_HEIGHT;
 
         MutableText multiplierMultiplierText = Text.empty().fillStyle(customFontDefault);
-
 
         if (steppedMultiplier >= 2.00f) {
             multiplierMultiplierText = Text.empty().fillStyle(customFontLarge).withColor(0xFFFF8C00);
