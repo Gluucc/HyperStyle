@@ -25,7 +25,7 @@ public abstract class AbilityHandlerMixin {
         var abilities = ((ClassUpdatePacketAccessor) packet).getAbilities();
 
         for (ChannelHandler.ClassUpdatePacket.AbilityInfo ability : abilities) {
-            HyperstyleMonumenta.LOGGER.info(ability.name + " " + ability.className);
+            //HyperstyleMonumenta.LOGGER.info(ability.name + " " + ability.className);
         }
     }
 
