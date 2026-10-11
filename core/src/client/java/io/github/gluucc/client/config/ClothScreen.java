@@ -54,6 +54,14 @@ public class ClothScreen {
                 .setSaveConsumer(v -> ModConfig.INSTANCE.hudScale = v / 100f)
                 .build());
 
+        general.addEntry(eb.startIntSlider(
+                        Text.translatable("option.hyperstyle.hud_rotation"),
+                        Math.round(ModConfig.INSTANCE.hudRotation), -130, 50)
+                .setDefaultValue(-55)
+                .setTextGetter(v -> Text.literal(v + "°"))
+                .setSaveConsumer(v -> ModConfig.INSTANCE.hudRotation = v)
+                .build());
+
         return builder.build();
     }
 }

@@ -87,6 +87,14 @@ public class HyperStyleClient implements ClientModInitializer {
 										ModConfig.save();
 										return 1;
 									})
+							))
+							.then(literal("rotation")
+									.then(argument("value", FloatArgumentType.floatArg()).executes(context -> {
+										float value = FloatArgumentType.getFloat(context, "value");
+										ModConfig.INSTANCE.hudRotation = value;
+										ModConfig.save();
+										return 1;
+									})
 							));
 
 			dispatcher.register(builder);

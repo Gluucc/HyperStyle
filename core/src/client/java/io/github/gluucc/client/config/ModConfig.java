@@ -20,6 +20,7 @@ public class ModConfig {
     public int hudOffsetTop = 30;
 
     public float hudScale = 1.0f;
+    public float hudRotation = -55f;
 
     public static void load() {
         try {

@@ -247,7 +247,7 @@ public class StyleHud {
         float z = scaledHeight / (2 * (float) Math.tan(fov / 2));
         matrices.translate(refRightEdge - ((double) scaledWidth / 2), ((double) scaledHeight / 2) - refCenterY, -z);
 
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-55.0f));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ModConfig.INSTANCE.hudRotation));
 
         matrices.translate(centerX - rightEdge, 0, 0);
 
