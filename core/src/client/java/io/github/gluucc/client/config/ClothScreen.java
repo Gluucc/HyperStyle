@@ -46,6 +46,14 @@ public class ClothScreen {
                 .setSaveConsumer(v -> ModConfig.INSTANCE.hudOffsetTop = v)
                 .build());
 
+        general.addEntry(eb.startIntSlider(
+                Text.translatable("option.hyperstyle.hud_scale"),
+                Math.round(ModConfig.INSTANCE.hudScale * 100), 50, 200)
+                .setDefaultValue(100)
+                .setTextGetter(v -> Text.literal(v + "%"))
+                .setSaveConsumer(v -> ModConfig.INSTANCE.hudScale = v / 100f)
+                .build());
+
         return builder.build();
     }
 }

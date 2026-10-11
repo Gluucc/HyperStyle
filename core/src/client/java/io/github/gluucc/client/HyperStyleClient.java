@@ -1,4 +1,6 @@
 package io.github.gluucc.client;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.gluucc.HyperStyle;
 import io.github.gluucc.client.config.ModConfig;
@@ -75,7 +77,16 @@ public class HyperStyleClient implements ClientModInitializer {
 										return 1;
 									})
 								))
-							);
+							)
+							.then(literal("size")
+									.then(argument("value", FloatArgumentType.floatArg()).executes(context -> {
+										float value = FloatArgumentType.getFloat(context, "value");
+										ModConfig.INSTANCE.hudScale = value;
+										ModConfig.save();
+										return 1;
+									})
+							));
+
 			dispatcher.register(builder);
 		});
 

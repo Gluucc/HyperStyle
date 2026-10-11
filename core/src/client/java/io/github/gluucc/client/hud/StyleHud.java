@@ -86,6 +86,8 @@ public class StyleHud {
         }
 
 
+
+
         float rankScale = 1.0f;
         if (animationStartTick != -1L) {
             long currentTick = StyleMeter.getCurrentTick();
@@ -137,8 +139,18 @@ public class StyleHud {
         int meterX = scaledWidth - TEXTURE_WIDTH - ModConfig.INSTANCE.hudOffsetRight;
         int meterY = ModConfig.INSTANCE.hudOffsetTop;
 
+        float hudScale = ModConfig.INSTANCE.hudScale;
+        float rightEdge = meterX + TEXTURE_WIDTH;
+        MatrixStack matrices = context.getMatrices();
+
+
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+
+        matrices.push();
+        matrices.translate(rightEdge, meterY, 0);
+        matrices.scale(hudScale, hudScale, 1f);
+        matrices.translate(-rightEdge, -meterY, 0);
 
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         int lineSpacing = renderer.fontHeight + 3;
@@ -189,6 +201,8 @@ public class StyleHud {
         int freshnessTextWidth = renderer.getWidth(freshnessText.asOrderedText());
         context.drawText(renderer, freshnessText, meterX + (TEXTURE_WIDTH - freshnessTextWidth) / 2, meterY + TEXTURE_HEIGHT - renderer.fontHeight, 0xFFFFFFFF, false);
 
+        matrices.pop();
+
         customBuffer.endWrite();
         mainBuffer.beginWrite(true);
 
@@ -198,7 +212,6 @@ public class StyleHud {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
-        MatrixStack matrices = context.getMatrices();
         RenderSystem.backupProjectionMatrix();
         customBuffer.setTexFilter(GlConst.GL_LINEAR);
         Matrix4f projection = new Matrix4f();
@@ -210,18 +223,17 @@ public class StyleHud {
         matrixStack.push();
 
         // upper left and lower left
-        float x1 = meterX - (float) RANK_SCALE_MAX_WIDTH_DIFF;
+        float x1 = rightEdge - (TEXTURE_WIDTH + (float) RANK_SCALE_MAX_WIDTH_DIFF) * hudScale;
         // lower right and upper right
-        float x2 = meterX + TEXTURE_WIDTH + (float) RANK_SCALE_MAX_WIDTH_DIFF;
+        float x2 = rightEdge + (float) RANK_SCALE_MAX_WIDTH_DIFF * hudScale;
         // upper left and upper right
-        float y1 = meterY - (float) RANK_SCALE_MAX_HEIGHT_DIFF;
+        float y1 = meterY - (float) RANK_SCALE_MAX_HEIGHT_DIFF * hudScale;
         // lower left and lower right
-        float y2 = meterY + TEXTURE_HEIGHT + (float) RANK_SCALE_MAX_HEIGHT_DIFF;
+        float y2 = meterY + (TEXTURE_HEIGHT + (float) RANK_SCALE_MAX_HEIGHT_DIFF) * hudScale;
 
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;
 
-        float rightEdge = meterX + TEXTURE_WIDTH;
 
         matrixStack.loadIdentity();
         float z = scaledHeight / (2 * (float) Math.tan(fov / 2));
