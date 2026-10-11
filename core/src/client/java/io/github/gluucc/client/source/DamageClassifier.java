@@ -60,7 +60,7 @@ public class DamageClassifier {
             return StyleEvents.JUMPSHOT;
         }
 
-        if (source.isIndirect() && record.heightAboveGround() > AIRBORNE_MIN_HEIGHT) {
+        if (record.heightAboveGround() > AIRBORNE_MIN_HEIGHT) {
             return StyleEvents.AIRSHOT;
         }
 

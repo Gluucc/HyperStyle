@@ -20,4 +20,6 @@ public class StyleEventsMonumenta {
     public static void init() {}
 
     public static final StyleEvent BIG_KILL = register("big_kill", "BIG KILL", 150,0xFFFFFFFF);
+    public static final StyleEvent GROUND_SLAM = register("ground_slam", "GROUND SLAM", 70, 0xFFFFFFFF);
+    public static final StyleEvent AIR_SLAM = register("air_slam", "AIR SLAM", 160, 0xFF00FFFF);
 }
