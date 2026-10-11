@@ -7,13 +7,16 @@
 	"authors": [
 		"Gluucc"
 	],
+	"contributors": [
+		"daffukk"
+	],
 	"contact": {
 		"homepage": "https://github.com/Gluucc/HyperStyle",
 		"sources": "https://github.com/Gluucc/HyperStyle"
 	},
 	"license": "GPL-3.0",
 	"icon": "assets/hyperstyle/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
 		"main": ["io.github.gluucc.HyperStyle"],
 		"client": ["io.github.gluucc.client.HyperStyleClient"],

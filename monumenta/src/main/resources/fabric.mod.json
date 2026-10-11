@@ -3,20 +3,22 @@
   "id": "hyperstyle_monumenta",
   "version": "${version}",
 
-  "name": "hyperstyle-monumenta",
-  "description": "",
-  "authors": [],
-  "contact": {},
-
+  "name": "HyperStyle: Monumenta",
+  "description": "Addon for HyperStyle that adds compatibility with the Monumenta server",
+  "authors": [
+    "Gluucc"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Gluucc/HyperStyle",
+    "sources": "https://github.com/Gluucc/HyperStyle"
+  },
   "license": "GPL-3.0",
   "icon": "assets/hyperstyle-monumenta/icon.png",
-
   "environment": "client",
   "entrypoints": {
     "client": ["io.github.gluucc.hyperstyleMonumenta.client.HyperstyleMonumentaClient"],
     "main": ["io.github.gluucc.hyperstyleMonumenta.HyperstyleMonumenta"]
   },
-
   "mixins": [
     "hyperstyle-monumenta.mixins.json"
     ,{
@@ -24,12 +26,11 @@
       "environment": "client"
     }
   ],
-
   "depends": {
     "fabricloader": ">=0.16.0",
     "fabric-api": "*",
     "minecraft": "~1.20.4",
-    "hyperstyle": "0.1.0",
-    "unofficial-monumenta-mod": "1.10"
+    "hyperstyle": ">=0.1.0-",
+    "unofficial-monumenta-mod": ">=1.10"
   }
 }

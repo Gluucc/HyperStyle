@@ -59,11 +59,15 @@ java {
 	targetCompatibility = JavaVersion.VERSION_17
 }
 
+base {
+	archivesName = "hyperstyle"
+}
+
 jar {
 	def projectName = project.name
 	inputs.property "projectName", projectName
 
-	from("LICENSE") {
+	from(rootProject.file("LICENSE")) {
 		rename { "${it}_$projectName"}
 	}
 }
