@@ -10,10 +10,18 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
+import net.minecraft.util.Formatting;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 
 public class AbilityClassifier {
     private static final int AIRBORNE_MIN_HEIGHT = 2;
+    private static final Set<Integer> blacklist = (Set.of(0xAAAAAA, 0x555555, 0xFFFFFF));
 
     public static StyleEvent resolveCastEvent(AbilityUpdatePacketAccessor ability) {
         return null;
@@ -21,20 +29,26 @@ public class AbilityClassifier {
 
     public static void addBigKill(DamageRecord record, StyleCategory category) {
         Text name = record.mobName();
-        if (name != null) {
-            String rawString = name.getString();
 
-            if (rawString.contains("§")) {
-                int index = rawString.indexOf("§");
-                if (index + 1 < rawString.length()) {
-                    char colorCode = rawString.charAt(index + 1);
-                    if (colorCode == '6') {
-                        StyleMeter.addStyle(StyleEventsMonumenta.BIG_KILL, category);
-                    }
-                }
+        if (name == null) return;
+
+        boolean[] isWhitelisted = {false};
+
+        name.asOrderedText().accept(((index, style, codePoint) -> {
+            TextColor color = style.getColor();
+
+            if (color == null || blacklist.contains(color.getRgb())) {
+                return false;
             }
+            isWhitelisted[0] = true;
+            return false;
+        }));
+
+        if (isWhitelisted[0]) {
+            StyleMeter.addStyle(StyleEventsMonumenta.BIG_KILL, category);
         }
     }
+
 
     public static void addGroundSlam(DamageRecord record, StyleCategory category) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
