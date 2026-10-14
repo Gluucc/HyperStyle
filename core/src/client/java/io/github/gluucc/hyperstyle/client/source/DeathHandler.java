@@ -7,7 +7,9 @@ import io.github.gluucc.hyperstyle.client.api.StyleCategory;
 import io.github.gluucc.hyperstyle.client.api.StyleEvents;
 import io.github.gluucc.hyperstyle.client.style.StyleMeter;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.MobEntity;
 
 import java.util.ArrayDeque;
 
@@ -20,8 +22,10 @@ public class DeathHandler {
         DamageRecord record = DamageHandler.getLastDamage(target.getId());
         if (record == null) return;
 
-        boolean isMine = record.source().getAttacker() == MinecraftClient.getInstance().player
+        Entity attacker = record.source().getAttacker();
+        boolean isMine = attacker == MinecraftClient.getInstance().player
                 || (record.lastPlayerHitTick() >= 0
+                && (attacker == null || attacker instanceof MobEntity)
                 && StyleMeter.getCurrentTick() - record.lastPlayerHitTick() < KILL_CREDIT_WINDOW);
 
         if (isMine) {
