@@ -11,11 +11,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
-import net.minecraft.util.Formatting;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 
