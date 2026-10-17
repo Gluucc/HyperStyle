@@ -43,17 +43,21 @@ public class StyleHud {
     private static SimpleFramebuffer customBuffer;
 
     static final Identifier TEXTURE = HyperStyle.id("textures/gui/test3.png");
-    static final Identifier FONT_18 = HyperStyle.id("vcr_18");
+
+    static final Identifier FONT_12 = HyperStyle.id("vcr_12");
     static final Identifier FONT_14 = HyperStyle.id("vcr_14");
+    static final Identifier FONT_16 = HyperStyle.id("vcr_16");
+    static final Identifier FONT_18 = HyperStyle.id("vcr_18");
     static final Identifier FONT_22 = HyperStyle.id("vcr_22");
     static final Identifier FONT_26 = HyperStyle.id("vcr_26");
-    static final Identifier FONT_11 = HyperStyle.id("vcr_11");
 
+    static final int FONT_12_HEIGHT = 9;
+    static final int FONT_16_HEIGHT = 12;
     static final int FONT_18_HEIGHT = 14;
     static final int FONT_14_HEIGHT = 10;
     static final int FONT_22_HEIGHT = 17;
     static final int FONT_26_HEIGHT = 20;
-    static final int FONT_11_HEIGHT = 8;
+
     public static final int TEXTURE_HEIGHT = 275;
     public static final int TEXTURE_WIDTH = 192;
 
@@ -210,12 +214,18 @@ public class StyleHud {
         float rightParallelogramCenter = ((parallelogramBarX2 + parallelogramBarX1 + PARALLELOGRAM_BAR_GAP) / 2);
 
         offsetY += 20;
-        Style customFontDefault = Style.EMPTY.withFont(FONT_18);
+
+        Style customFont12 = Style.EMPTY.withFont(FONT_12);
+        Style customFont14 = Style.EMPTY.withFont(FONT_14);
+        Style customFont16 = Style.EMPTY.withFont(FONT_16);
+        Style customFont18 = Style.EMPTY.withFont(FONT_18);
+        Style customFont22 = Style.EMPTY.withFont(FONT_22);
+        Style customFont26 = Style.EMPTY.withFont(FONT_26);
 
         int largeLineSpacing = 22;
 
         for (StyleEntry entry : styleList) {
-            MutableText entryText = Text.empty().fillStyle(customFontDefault);
+            MutableText entryText = Text.empty().fillStyle(customFont18);
             entryText.append(Text.literal("+ ").formatted(Formatting.WHITE));
             entryText.append(Text.literal(entry.event().label()));
             if (entry.count() > 1) {
@@ -228,17 +238,12 @@ public class StyleHud {
 
         int offsetBottom = 5;
 
-        Style customFont11 = Style.EMPTY.withFont(FONT_11);
-        Style customFont14 = Style.EMPTY.withFont(FONT_14);
-        Style customFont22 = Style.EMPTY.withFont(FONT_22);
-        Style customFont26 = Style.EMPTY.withFont(FONT_26);
-
         HudRenderUtil.drawParallelogram(context, meterX, parallelogramBarY1, parallelogramBarX1 - PARALLELOGRAM_BAR_GAP, parallelogramBarY2, -PARALLELOGRAM_SKEW, 0, DpsLevel.BLACK.getColor());
 
         String freshnessStr = "FRESH: " + String.format("%.2f", StyleMeter.getFreshness());
-        MutableText freshnessText = Text.literal(freshnessStr).setStyle(customFont11);
+        MutableText freshnessText = Text.literal(freshnessStr).setStyle(customFont12);
         int freshnessTextWidth = renderer.getWidth(freshnessText.asOrderedText());
-        context.drawText(renderer, freshnessText, (((meterX + (int) parallelogramBarX1 - PARALLELOGRAM_BAR_GAP) / 2) - freshnessTextWidth / 2) - PARALLELOGRAM_SKEW / 4, (int) parallelogramBarY1 + (PARALLELOGRAM_BAR_HEIGHT - FONT_11_HEIGHT) / 2, 0xFFFFFFFF, false);
+        context.drawText(renderer, freshnessText, (((meterX + (int) parallelogramBarX1 - PARALLELOGRAM_BAR_GAP) / 2) - freshnessTextWidth / 2) - PARALLELOGRAM_SKEW / 4, (int) parallelogramBarY1 + (PARALLELOGRAM_BAR_HEIGHT - FONT_12_HEIGHT) / 2, 0xFFFFFFFF, false);
 
         DpsLevel dpsLevel = StyleMeter.getCurrentDpsLevel();
 
@@ -265,11 +270,11 @@ public class StyleHud {
         float steppedDps = Math.round(smoothDps * 100.0f) / 100.0f;
 
         String dpsStr = "DPS: " + (int) steppedDps;
-        MutableText dpsText = Text.literal(dpsStr).setStyle(customFont14);
+        MutableText dpsText = Text.literal(dpsStr).setStyle(customFont16);
         int dpsTextWidth = renderer.getWidth(dpsText.asOrderedText());
 
-        context.drawText(renderer, dpsText, (((int) rightParallelogramCenter - dpsTextWidth / 2) - PARALLELOGRAM_SKEW / 4) + 1, ((int) parallelogramBarY1 + (PARALLELOGRAM_BAR_HEIGHT - FONT_14_HEIGHT) / 2) + 1, 0xCC000000, false);
-        context.drawText(renderer, dpsText, ((int) rightParallelogramCenter - dpsTextWidth / 2) - PARALLELOGRAM_SKEW / 4, (int) parallelogramBarY1 + (PARALLELOGRAM_BAR_HEIGHT - FONT_14_HEIGHT) / 2, 0xFFFFFFFF, false);
+        context.drawText(renderer, dpsText, (((int) rightParallelogramCenter - dpsTextWidth / 2) - PARALLELOGRAM_SKEW / 4) + 1, ((int) parallelogramBarY1 + (PARALLELOGRAM_BAR_HEIGHT - FONT_16_HEIGHT) / 2) + 1, 0xCC000000, false);
+        context.drawText(renderer, dpsText, ((int) rightParallelogramCenter - dpsTextWidth / 2) - PARALLELOGRAM_SKEW / 4, (int) parallelogramBarY1 + (PARALLELOGRAM_BAR_HEIGHT - FONT_16_HEIGHT) / 2, 0xFFFFFFFF, false);
 
         MutableText multiplierText = Text.empty().fillStyle(customFont14);
         multiplierText.append(Text.literal("MULTIPLIER").setStyle(customFont14));
@@ -280,7 +285,7 @@ public class StyleHud {
 
         int currentMultiplierFontHeight = FONT_18_HEIGHT;
 
-        MutableText multiplierMultiplierText = Text.empty().fillStyle(customFontDefault);
+        MutableText multiplierMultiplierText = Text.empty().fillStyle(customFont18);
 
         if (steppedMultiplier >= 2.00f) {
             multiplierMultiplierText = Text.empty().fillStyle(customFont22).withColor(0xFFFF8C00);
