@@ -134,8 +134,6 @@ public class StyleMeter {
             }
         }
 
-        System.out.println("DPS: " + currentDps + " |DPS MULT: " + dpsMultiplier + "| DPS LEVEL: " + currentDpsLevel);
-
         if (stylePoints > 0) {
             stylePoints -= DECAY * currentRank.getDecayMultiplier();
         }
@@ -277,7 +275,12 @@ public class StyleMeter {
         freshness = 1;
         peakPoints = 0;
         damageEntries.clear();
+        currentAirborneMultiplier = 1.00f;
+        prevAirborneMultiplier = 1.00f;
         currentDps = 0;
+        prevDps = 0;
+        effectiveDps = 0;
+        prevEffectiveDps = 0;
         dpsMultiplier = DpsLevel.BLACK.getPointsMultiplier();
         currentDpsLevel = DpsLevel.BLACK;
         DpsLevel.setThresholdMultiplier(DpsLevel.getDefaultThresholdMultiplier());
