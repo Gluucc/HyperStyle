@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.systems.VertexSorter;
 import io.github.gluucc.hyperstyle.HyperStyle;
 import io.github.gluucc.hyperstyle.client.config.ModConfig;
+import io.github.gluucc.hyperstyle.client.style.DpsLevel;
 import io.github.gluucc.hyperstyle.client.style.StyleEntry;
 import io.github.gluucc.hyperstyle.client.style.StyleMeter;
 import io.github.gluucc.hyperstyle.client.style.StyleRank;
@@ -28,6 +29,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.util.Collection;
 
@@ -54,6 +56,10 @@ public class StyleHud {
     static final int SMALL_FONT_HEIGHT = 8;
     public static final int TEXTURE_HEIGHT = 275;
     public static final int TEXTURE_WIDTH = 192;
+
+    static final int PARALLELOGRAM_BAR_HEIGHT = 19;
+    static final int PARALLELOGRAM_BAR_GAP = 1;
+    static final int PARALLELOGRAM_SKEW = 8;
 
     static final int RANK_HEIGHT = 84;
     static final int RANK_WIDTH = 192;
@@ -163,8 +169,6 @@ public class StyleHud {
         matrices.translate(-rightEdge, -meterY, 0);
 
         context.drawTexture(TEXTURE, meterX, meterY, 0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        int lineSpacing = renderer.fontHeight + 3;
-        int offsetY = 72;
 
         int currentRankWidth = Math.round(RANK_WIDTH * rankScale);
         int currentRankHeight = Math.round(RANK_HEIGHT * rankScale);
@@ -183,7 +187,7 @@ public class StyleHud {
 
         rankMatrices.pop();
 
-        offsetY += lineSpacing;
+        int offsetY = RANK_HEIGHT;
 
         RenderSystem.disableBlend();
 
@@ -195,6 +199,15 @@ public class StyleHud {
         if (filledWidth > 0) {
             context.fill(meterX, meterY + offsetY, meterX + filledWidth, meterY + 10 + offsetY, 0xFFFFFFFF);
         }
+
+        float parallelogramBarX1 = (meterX + (float) TEXTURE_WIDTH / 2) + 1;
+        float parallelogramBarY1 = meterY + TEXTURE_HEIGHT + PARALLELOGRAM_BAR_GAP * 2;
+        float parallelogramBarX2 = meterX + TEXTURE_WIDTH;
+        float parallelogramBarY2 = meterY + PARALLELOGRAM_BAR_HEIGHT + TEXTURE_HEIGHT + PARALLELOGRAM_BAR_GAP * 2;
+
+        float parallelogramBarLeftEdge = parallelogramBarX1 + PARALLELOGRAM_BAR_GAP;
+        float parallelogramWidth = parallelogramBarX2 - parallelogramBarLeftEdge;
+        float rightParallelogramCenter = ((parallelogramBarX2 + parallelogramBarX1 + PARALLELOGRAM_BAR_GAP) / 2);
 
         offsetY += 20;
         Style customFontDefault = Style.EMPTY.withFont(DEFAULT_FONT);
@@ -216,23 +229,52 @@ public class StyleHud {
         int offsetBottom = 5;
 
         Style customFontSmall = Style.EMPTY.withFont(SMALL_FONT);
-
-        String freshnessStr = "FRESHNESS: " + String.format("%.2f", StyleMeter.getFreshness());
-        MutableText freshnessText = Text.literal(freshnessStr).setStyle(customFontSmall);
-
-        int freshnessTextWidth = renderer.getWidth(freshnessText.asOrderedText());
-        context.drawText(renderer, freshnessText, meterX + (TEXTURE_WIDTH - freshnessTextWidth) / 2, meterY + TEXTURE_HEIGHT - SMALL_FONT_HEIGHT - offsetBottom, 0xFFFFFFFF, false);
-
-        offsetBottom += 10;
-
         Style customFontMedium = Style.EMPTY.withFont(MEDIUM_FONT);
         Style customFontLarge = Style.EMPTY.withFont(LARGE_FONT);
         Style customFontMassive = Style.EMPTY.withFont(MASSIVE_FONT);
 
+        HudRenderUtil.drawParallelogram(context, meterX, parallelogramBarY1, parallelogramBarX1 - PARALLELOGRAM_BAR_GAP, parallelogramBarY2, -PARALLELOGRAM_SKEW, 0, DpsLevel.BLACK.getColor());
+
+        String freshnessStr = "FRESH: " + String.format("%.2f", StyleMeter.getFreshness());
+        MutableText freshnessText = Text.literal(freshnessStr).setStyle(customFontSmall);
+        int freshnessTextWidth = renderer.getWidth(freshnessText.asOrderedText());
+        context.drawText(renderer, freshnessText, (((meterX + (int) parallelogramBarX1 - PARALLELOGRAM_BAR_GAP) / 2) - freshnessTextWidth / 2) - PARALLELOGRAM_SKEW / 4, (int) parallelogramBarY1 + (PARALLELOGRAM_BAR_HEIGHT - SMALL_FONT_HEIGHT) / 2, 0xFFFFFFFF, false);
+
+        DpsLevel dpsLevel = StyleMeter.getCurrentDpsLevel();
+
+        float smoothEffectiveDps = MathHelper.lerp(tickDelta, StyleMeter.getPrevEffectiveDps(), StyleMeter.getEffectiveDps());
+
+        percent = StyleMeter.getDpsLevelPercent(smoothEffectiveDps);
+        float filledDpsWidth = (float) (parallelogramBarX2 - (parallelogramWidth + PARALLELOGRAM_SKEW) * (percent / 100.0)) + PARALLELOGRAM_SKEW;
+
+        Matrix4f pos = matrices.peek().getPositionMatrix();
+
+        Vector3f dpsBarBottomLeftPoint = new Vector3f(parallelogramBarLeftEdge - PARALLELOGRAM_SKEW - 10, parallelogramBarY2 + PARALLELOGRAM_SKEW, 0);
+        Vector3f dpsBarUpperRightPoint = new Vector3f(parallelogramBarX2, parallelogramBarY1 - PARALLELOGRAM_SKEW, 0);
+
+        dpsBarBottomLeftPoint = pos.transformPosition(dpsBarBottomLeftPoint);
+        dpsBarUpperRightPoint = pos.transformPosition(dpsBarUpperRightPoint);
+
+        context.enableScissor((int) dpsBarBottomLeftPoint.x, (int) dpsBarUpperRightPoint.y, (int) dpsBarUpperRightPoint.x, (int) dpsBarBottomLeftPoint.y);
+
+        HudRenderUtil.drawParallelogram(context, parallelogramBarLeftEdge, parallelogramBarY1, parallelogramBarX2 + PARALLELOGRAM_SKEW, parallelogramBarY2, 0, -PARALLELOGRAM_SKEW, dpsLevel.getColor());
+        HudRenderUtil.drawParallelogram(context, filledDpsWidth, parallelogramBarY1, parallelogramBarX2 + PARALLELOGRAM_SKEW, parallelogramBarY2, 0, -PARALLELOGRAM_SKEW, dpsLevel.getNextLevel().getColor());
+        context.disableScissor();
+
+        float smoothDps = MathHelper.lerp(tickDelta, StyleMeter.getPrevDps(), StyleMeter.getCurrentDps());
+        float steppedDps = Math.round(smoothDps * 100.0f) / 100.0f;
+
+        String dpsStr = "DPS: " + (int) steppedDps;
+        MutableText dpsText = Text.literal(dpsStr).setStyle(customFontMedium);
+        int dpsTextWidth = renderer.getWidth(dpsText.asOrderedText());
+
+        context.drawText(renderer, dpsText, (((int) rightParallelogramCenter - dpsTextWidth / 2) - PARALLELOGRAM_SKEW / 4) + 1, ((int) parallelogramBarY1 + (PARALLELOGRAM_BAR_HEIGHT - MEDIUM_FONT_HEIGHT) / 2) + 1, 0xCC000000, false);
+        context.drawText(renderer, dpsText, ((int) rightParallelogramCenter - dpsTextWidth / 2) - PARALLELOGRAM_SKEW / 4, (int) parallelogramBarY1 + (PARALLELOGRAM_BAR_HEIGHT - MEDIUM_FONT_HEIGHT) / 2, 0xFFFFFFFF, false);
+
         MutableText multiplierText = Text.empty().fillStyle(customFontMedium);
         multiplierText.append(Text.literal("MULTIPLIER").setStyle(customFontMedium));
 
-        float smoothMultiplier = MathHelper.lerp(tickDelta, StyleMeter.getPrevMultiplier(), StyleMeter.getCurrentMultiplier());
+        float smoothMultiplier = MathHelper.lerp(tickDelta, StyleMeter.getPrevAirborneMultiplier(), StyleMeter.getCurrentAirborneMultiplier());
         float steppedMultiplier = Math.round(smoothMultiplier * 100.0f) / 100.0f;
         String multiplierToDisplay = String.format(java.util.Locale.US, "%.2f", steppedMultiplier);
 
@@ -255,8 +297,8 @@ public class StyleHud {
 
         int multiplierMultiplierTextWidth = renderer.getWidth(multiplierMultiplierText.asOrderedText());
 
-        context.drawText(renderer, multiplierText, meterX, meterY + TEXTURE_HEIGHT - DEFAULT_FONT_HEIGHT - SMALL_FONT_HEIGHT - offsetBottom + DEFAULT_FONT_HEIGHT - MEDIUM_FONT_HEIGHT, 0xFFFFFFFF, false);
-        context.drawText(renderer, multiplierMultiplierText, meterX + TEXTURE_WIDTH - multiplierMultiplierTextWidth, meterY + TEXTURE_HEIGHT - currentMultiplierFontHeight - SMALL_FONT_HEIGHT - offsetBottom, 0xFFFFFFFF, false);
+        context.drawText(renderer, multiplierText, meterX, meterY + TEXTURE_HEIGHT - MEDIUM_FONT_HEIGHT - offsetBottom, 0xFFFFFFFF, false);
+        context.drawText(renderer, multiplierMultiplierText, meterX + TEXTURE_WIDTH - multiplierMultiplierTextWidth, meterY + TEXTURE_HEIGHT - currentMultiplierFontHeight - offsetBottom, 0xFFFFFFFF, false);
 
         matrices.pop();
 
@@ -291,9 +333,9 @@ public class StyleHud {
         // lower right and upper right
         float x2 = rightEdge + (float) RANK_SCALE_MAX_WIDTH_DIFF * hudScale;
         // upper left and upper right
-        float y1 = meterY - (float) RANK_SCALE_MAX_HEIGHT_DIFF * hudScale;
+        float y1 = meterY - ((float) RANK_SCALE_MAX_HEIGHT_DIFF + PARALLELOGRAM_BAR_HEIGHT + PARALLELOGRAM_BAR_GAP) * hudScale;
         // lower left and lower right
-        float y2 = meterY + (TEXTURE_HEIGHT + (float) RANK_SCALE_MAX_HEIGHT_DIFF) * hudScale;
+        float y2 = meterY + (TEXTURE_HEIGHT + (float) RANK_SCALE_MAX_HEIGHT_DIFF + PARALLELOGRAM_BAR_HEIGHT + PARALLELOGRAM_BAR_GAP) * hudScale;
 
         float centerX = (x1 + x2) / 2;
         float centerY = (y1 + y2) / 2;

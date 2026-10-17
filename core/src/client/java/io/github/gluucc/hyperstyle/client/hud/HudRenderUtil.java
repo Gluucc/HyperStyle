@@ -1,9 +1,16 @@
 package io.github.gluucc.hyperstyle.client.hud;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.gluucc.hyperstyle.client.config.ModConfig;
 import io.github.gluucc.hyperstyle.client.style.StyleMeter;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -79,5 +86,23 @@ public class HudRenderUtil {
             renderY = 0;
             renderZ = 0;
         }
+    }
+
+    public static void drawParallelogram(DrawContext context, float x1, float y1, float x2, float y2, int bottomRightVertexOffset, int bottomLeftVertexOffset, int color) {
+        Matrix4f matrices = context.getMatrices().peek().getPositionMatrix();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+
+        buffer.vertex(matrices, x1, y1, 0).color(color).next();
+        buffer.vertex(matrices, x1 + bottomLeftVertexOffset, y2, 0).color(color).next();
+        buffer.vertex(matrices, x2 + bottomRightVertexOffset, y2, 0).color(color).next();
+        buffer.vertex(matrices, x2, y1, 0).color(color).next();
+
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+        tessellator.draw();
     }
 }
