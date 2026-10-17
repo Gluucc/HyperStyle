@@ -3,7 +3,7 @@
     {
       "type": "ttf",
       "file": "hyperstyle:vcr_osd_mono.ttf",
-      "shift": [0, 0],
+      "shift": [0, -2.5],
       "size": 22.0,
       "oversample": 4.0
     }
